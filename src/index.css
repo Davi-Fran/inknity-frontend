@@ -1,1 +1,17 @@
-@import 'tailwincss';
+@import "tailwindcss";
+
+@theme {
+    --color-inknity-purple: #820399;
+    --color-inknity-dark-purple: #100D28;
+    --color-inknity-yellow: #EFC409;
+    --color-inknity-white: #F2F0EF;
+    --font-ubuntu: "Ubuntu", sans-serif;
+}
+
+@layer base {
+    body {
+        background-color: var(--color-inknity-dark-purple);
+        color: var(--color-inknity-white);
+        font-family: var(--font-ubuntu);
+    }
+}
