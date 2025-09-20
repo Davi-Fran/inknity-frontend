@@ -45,7 +45,7 @@ const SignUp = () => {
                     
                     <button 
                         type='submit'
-                        className='button w-5/6 py-3 px-2 mb-3 transtion-all duration-200 md:w-1/2'
+                        className='formButton w-5/6 py-3 px-2 mb-3 transtion-all duration-200 md:w-1/2'
                         onClick={() => navigation('/createProfile')}
                     >Cadastrar</button>
 

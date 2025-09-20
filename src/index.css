@@ -20,7 +20,7 @@
         @apply border border-inknity-white/80 rounded outline-none focus:border-inknity-white focus:rounded-md;
     }
 
-    .button {
+    .formButton {
         @apply border border-inknity-purple bg-inknity-purple/15 rounded font-bold cursor-pointer hover:bg-inknity-purple/30 hover:rounded-md;
     }
 }

@@ -20,7 +20,7 @@ const CreateProfile = () => {
             { !isMobile && <Art /> }
 
             <form className='flex flex-col h-3/4 pt-12 items-center gap-14 md:w-3/5 md:h-full md:p-0 md:justify-center md:gap-4'>
-                <header className='flex flex-col items-center w-5/6 md:w-1/2'>
+                <header className='flex flex-col items-center w-5/6 md:w-3/4'>
                     <div className='w-full'>
                         <Link to='/register' className='mb-5 justify-self-start'>
                             <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' className='size-6'>
@@ -69,8 +69,8 @@ const CreateProfile = () => {
                     
                     <button 
                         type='submit'
-                        className='button w-5/6 py-3 px-2 mb-3 transtion-all duration-200 md:w-1/2'
-                        onClick={() => navigation('/createProfile')}
+                        className='formButton w-5/6 py-3 px-2 mb-3 transtion-all duration-200 md:w-1/2'
+                        onClick={() => navigation('/selectStyles')}
                     >Avançar</button>
                 </main>
             </form>
