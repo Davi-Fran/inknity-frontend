@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route  } from 'react-router'
 import Welcome from '../pages/Welcome'
-import Form from '../pages/Form'
+import Login from '../pages/Login'
+import SignUp from '../pages/SignUp'
 
 export const Router = () => {
     return (
@@ -8,9 +9,9 @@ export const Router = () => {
             <Routes>
                 <Route index element={ <Welcome /> } />
 
-                <Route path='form' element={ <Form /> }>
-                    
-                </Route>
+                <Route path='login' element={ <Login /> } />
+
+                <Route path='signup' element={ <SignUp /> } />
             </Routes>
         </BrowserRouter>
     )

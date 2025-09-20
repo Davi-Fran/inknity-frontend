@@ -10,8 +10,16 @@
 
 @layer base {
     body {
-        background-color: var(--color-inknity-dark-purple);
-        color: var(--color-inknity-white);
-        font-family: var(--font-ubuntu);
+        @apply bg-inknity-dark-purple text-inknity-white font-ubuntu;
+    }
+}
+
+@layer components {
+    .input {
+        @apply border border-inknity-white/80 rounded outline-none focus:border-inknity-white focus:rounded-md transtion-all duration-200;
+    }
+
+    .button {
+        @apply border border-inknity-purple bg-inknity-purple/15 rounded font-bold cursor-pointer hover:bg-inknity-purple/30 hover:rounded-md transtion-all duration-200;
     }
 }
