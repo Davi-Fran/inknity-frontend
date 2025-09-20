@@ -16,10 +16,10 @@
 
 @layer components {
     .input {
-        @apply border border-inknity-white/80 rounded outline-none focus:border-inknity-white focus:rounded-md transtion-all duration-200;
+        @apply border border-inknity-white/80 rounded outline-none focus:border-inknity-white focus:rounded-md;
     }
 
     .button {
-        @apply border border-inknity-purple bg-inknity-purple/15 rounded font-bold cursor-pointer hover:bg-inknity-purple/30 hover:rounded-md transtion-all duration-200;
+        @apply border border-inknity-purple bg-inknity-purple/15 rounded font-bold cursor-pointer hover:bg-inknity-purple/30 hover:rounded-md;
     }
 }

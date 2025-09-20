@@ -21,7 +21,7 @@ const Login = () => {
                         placeholder='Email'
                         value={email}
                         onChange={e => setEmail(e.target.value)}
-                        className='input w-5/6 py-2.5 px-2 mb-4 md:w-1/2'
+                        className='input w-5/6 py-2.5 px-2 transtion-all duration-200 mb-4 md:w-1/2'
                     />
 
                     <input 
@@ -29,18 +29,18 @@ const Login = () => {
                         placeholder='Senha'
                         value={password}
                         onChange={e => setPassword(e.target.value)}
-                        className='input w-5/6 py-2.5 px-2 mb-14 md:w-1/2 md:mb-4'
+                        className='input w-5/6 py-2.5 px-2 mb-14  md:w-1/2 md:mb-4'
                     />
                     
                     <button 
                         type='submit'
-                        className='button w-5/6 py-3 px-2 mb-3 md:w-1/2'
+                        className='button w-5/6 py-3 px-2 mb-3 transtion-all duration-200 md:w-1/2'
                     >Entrar</button>
 
                     <p>
                         Não tem conta?
                         <Link 
-                            to='/signup' 
+                            to='/register' 
                             className='ml-1 text-inknity-purple hover:underline'
                         >Cadastre-se!</Link>
                     </p>
