@@ -1,11 +1,13 @@
 import { Art } from '../components/Art'
 import { useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 
 const SignUp = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+
+    const navigation = useNavigate()
 
     return (
         <div className='h-screen w-screen md:flex'>
@@ -44,6 +46,7 @@ const SignUp = () => {
                     <button 
                         type='submit'
                         className='button w-5/6 py-3 px-2 mb-3 transtion-all duration-200 md:w-1/2'
+                        onClick={() => navigation('/createProfile')}
                     >Cadastrar</button>
 
                     <p>
