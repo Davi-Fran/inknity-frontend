@@ -4,6 +4,7 @@ import Login from '../pages/Login'
 import SignUp from '../pages/SignUp'
 import CreateProfile from '../pages/CreateProfile'
 import SelectStyles from '../pages/SelectStyles'
+import Feed from '../pages/Feed'
 
 export const Router = () => {
     return (
@@ -18,6 +19,8 @@ export const Router = () => {
                 <Route path='createProfile' element={ <CreateProfile /> } />
 
                 <Route path='selectStyles' element={ <SelectStyles /> } />
+
+                <Route path='feed' element={ <Feed /> } />
             </Routes>
         </BrowserRouter>
     )
