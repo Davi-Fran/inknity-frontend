@@ -5,6 +5,7 @@ import SignUp from '../pages/SignUp'
 import CreateProfile from '../pages/CreateProfile'
 import SelectStyles from '../pages/SelectStyles'
 import Feed from '../pages/Feed'
+import { Menu } from '../components/Menu'
 
 export const Router = () => {
     return (
@@ -20,7 +21,9 @@ export const Router = () => {
 
                 <Route path='selectStyles' element={ <SelectStyles /> } />
 
-                <Route path='feed' element={ <Feed /> } />
+                <Route path='user/:username' element={ <Menu /> }>
+                    <Route path='feed' element={ <Feed /> } />
+                </Route>
             </Routes>
         </BrowserRouter>
     )

@@ -22,8 +22,6 @@ const SelectStyles = () => {
 
     const navigation = useNavigate()
 
-
-
     useEffect(() => {
         window.addEventListener('resize', () => setIsMobile(window.innerWidth < 768))
         return () => window.removeEventListener('resize', () => setIsMobile(window.innerWidth < 768))
@@ -35,7 +33,6 @@ const SelectStyles = () => {
         }
 
         setTags([ ...tags, { label, active: true } ])
-
         setAddStyle('')
     }
 
@@ -56,7 +53,7 @@ const SelectStyles = () => {
                     <h1 className='text-3xl md:text-4xl'>Selecione seus estilos!</h1>
                 </header>
 
-                <main className='flex flex-wrap justify-around flex-1 pt-2 w-5/6 h-1/2 rounded overflow-auto bg-inknity-back/40 md:w-3/4 md:h-4/5 md:py-5'>
+                <main className='flex flex-wrap justify-around flex-1 pt-2 w-5/6 h-1/2 rounded overflow-auto bg-inknity-background/40 md:w-3/4 md:h-4/5 md:py-5'>
                     {
                         tags.map((item, index) => <Tag key={index} label={item.label} active={item.active} />)
                     }
@@ -86,7 +83,7 @@ const SelectStyles = () => {
 
                 <button 
                     type='submit'
-                    onClick={() => navigation('/feed')}
+                    onClick={() => navigation('/user/idk/feed')}
                     className='formButton py-3 w-2/3 mb-20 md:w-1/3'
                 >Finalizar</button>
             </form>

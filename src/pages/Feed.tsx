@@ -1,6 +1,10 @@
 const Feed = () => {
     return (
-        <h1>Feed</h1>
+        <div className='h-13/14 w-full'>
+            <div className=''>
+                
+            </div>
+        </div>
     )
 }
 

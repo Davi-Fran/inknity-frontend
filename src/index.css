@@ -5,55 +5,9 @@
     --color-inknity-dark-purple: #100D28;
     --color-inknity-yellow: #EFC409;
     --color-inknity-white: #F2F0EF;
-    --color-inknity-back: #211B36;
+    --color-inknity-background: #211B36;
+    --color-inknity-background-2: #1E1C2F;
     --font-ubuntu: "Ubuntu", sans-serif;
-
-    --animate-rotateToX: rotate 0.5s forwards;
-    --animate-rotateToPlus: rotateToPlus 0.5s forwards;
-
-    @keyframes rotateToX {
-        0% {
-            transform: rotate(9deg);
-        }
-    
-        30% {
-            transform: rotate(18deg);
-        }
-    
-        60% {
-            transform: rotate(27deg);
-        }
-    
-        90% {
-            transform: rotate(36deg);
-        }
-    
-        100% {
-            transform: rotate(45deg);
-        }
-    }
-
-    @keyframes rotateToPlus {
-        0% {
-            transform: rotate(45deg);
-        }
-    
-        30% {
-            transform: rotate(36deg);
-        }
-    
-        60% {
-            transform: rotate(27deg);
-        }
-    
-        90% {
-            transform: rotate(18deg);
-        }
-    
-        100% {
-            transform: rotate(0deg);
-        }
-    }
 }
 
 @layer base {
