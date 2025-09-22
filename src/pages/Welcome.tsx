@@ -1,6 +1,22 @@
 import standard from '../assets/img/standard.svg'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router'
 
 const Welcome = () => {
+    const navigation = useNavigate()
+
+    useEffect(() => {
+        const handleKeyPress = () => {
+            navigation('/login');
+        }
+
+        window.addEventListener('keydown', handleKeyPress);
+
+        return () => {
+        window.removeEventListener('keydown', handleKeyPress);
+        }
+    }, [navigation])
+
     return (
         <div className='h-screen w-screen flex flex-col'>
             <section className='flex-1 flex justify-center items-center'>
