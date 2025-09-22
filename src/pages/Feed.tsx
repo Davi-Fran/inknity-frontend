@@ -7,8 +7,8 @@ const Feed = () => {
     const handleActivate = (param: string) => param === searchParams.get('pfrom')
 
     return (
-        <div className='h-13/14 w-full'>
-            <header className='w-full h-1/6'>
+        <div className='h-13/14 w-full md:h-full md:w-13/14 md:flex md:flex-col md:items-center'>
+            <header className='w-full h-1/6 md:flex md:items-center md:h-1/10'>
                 <section className='flex items-center justify-between w-full h-1/2 bg-inknity-background-2 px-5 md:hidden'>
                     <div className='w-1/2 h-full bg-cover bg-center bg-[url(/src/assets/img/inline.svg)]'></div>
 
@@ -44,12 +44,13 @@ const Feed = () => {
                 </section>
             </header>
 
-            <main className='w-full h-5/6 overflow-auto'>
+            <main className='w-full h-5/6 overflow-auto md:w-5/8 md:px-8 md:pt-5 md:bg-inknity-background md:rounded-md md:h-full'>
+                <Post />
                 <Post />
                 <Post />
 
-                <div className='flex justify-center items-center w-full h-1/6 border-t border-t-inknity-white/20'>
-                    <button className='bg-inknity-purple py-3 px-10 rounded font-bold hover:cursor-pointer'>Ver mais</button>
+                <div className='flex justify-center items-center w-full h-1/6'>
+                    <button className='bg-inknity-purple py-3 px-10 rounded font-bold hover:cursor-pointer hover:bg-inknity-purple/80 hover:text-inknity-white/80 hover:rounded-md transition-all duration-300 shadow-[0_0_8px] shadow-inknity-purple'>Ver mais</button>
                 </div>
             </main>
         </div>

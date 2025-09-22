@@ -7,7 +7,7 @@ export const Post = () => {
     const handleLike = () => setWasLiked(!wasLiked)
 
     return (
-        <article className='w-full h-full border-t border-t-inknity-white/20'>
+        <article className='w-full h-full bg-inknity-dark-purple border-t border-t-inknity-white/20 md:mb-2 md:h-155 md:rounded'>
             <section className='flex items-center w-full h-1/8 pl-5 gap-3'>
                 <div className='size-12 bg-red-400 bg-center bg-cover rounded-full bg-[url(/src/assets/img/userPhoto.png)]'></div>
 

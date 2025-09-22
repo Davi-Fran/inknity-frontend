@@ -83,7 +83,7 @@ const SelectStyles = () => {
 
                 <button 
                     type='submit'
-                    onClick={() => navigation('/user/idk/feed')}
+                    onClick={() => navigation('/user/idk/feed?pfrom=foryou')}
                     className='formButton py-3 w-2/3 mb-20 md:w-1/3'
                 >Finalizar</button>
             </form>
