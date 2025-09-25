@@ -7,6 +7,7 @@
     --color-inknity-white: #F2F0EF;
     --color-inknity-background: #211B36;
     --color-inknity-background-2: #1E1C2F;
+    --color-inknity-banner: #2E243C;
     --font-ubuntu: "Ubuntu", sans-serif;
 }
 
@@ -23,5 +24,9 @@
 
     .formButton {
         @apply border border-inknity-purple bg-inknity-purple/15 rounded font-bold cursor-pointer hover:bg-inknity-purple/30 hover:rounded-md;
+    }
+
+    .profileButton {
+        @apply bg-inknity-purple/30 border border-inknity-purple rounded hover:cursor-pointer hover:rounded-md;
     }
 }

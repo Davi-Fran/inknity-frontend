@@ -1,18 +1,20 @@
 import standard from '../assets/img/standard.svg'
 import { useState } from 'react'
+import { Link, useParams } from 'react-router'
 
 export const Post = () => {
     const [wasLiked, setWasLiked] = useState(false)
+    const { username } = useParams()
 
     const handleLike = () => setWasLiked(!wasLiked)
 
     return (
         <article className='w-full h-full bg-inknity-dark-purple border-t border-t-inknity-white/20 md:mb-2 md:h-155 md:rounded'>
             <section className='flex items-center w-full h-1/8 pl-5 gap-3'>
-                <div className='size-12 bg-red-400 bg-center bg-cover rounded-full bg-[url(/src/assets/img/userPhoto.png)]'></div>
+                <div className='size-12 bg-center bg-cover rounded-full bg-[url(/src/assets/img/userPhoto.png)]'></div>
 
                 <div>
-                    <p className='leading-tight text-lg font-bold hover:text-inknity-purple hover:cursor-pointer'>John Doe</p>
+                    <Link to={`/user/${username}/profile`} className='leading-tight text-lg font-bold hover:text-inknity-purple hover:cursor-pointer'>John Doe</Link>
                     <p className='leading-tight text-sm text-inknity-white/50 m-0'>@johndoe</p>
                 </div>
             </section>

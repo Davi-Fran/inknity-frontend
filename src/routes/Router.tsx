@@ -18,28 +18,18 @@ export const Router = () => {
         <BrowserRouter>
             <Routes>
                 <Route index element={ <Welcome /> } />
-
                 <Route path='login' element={ <Login /> } />
-
                 <Route path='register' element={ <SignUp /> } />
-
                 <Route path='createProfile' element={ <CreateProfile /> } />
-
                 <Route path='selectStyles' element={ <SelectStyles /> } />
 
                 <Route path='user/:username' element={ <Menu /> }>
                     <Route path='feed' element={ <Feed /> } />
-
                     <Route path='search' element={ <Search /> } />
-
                     <Route path='writePost' element={ <WritePost /> } />
-
                     <Route path='profile' element={ <Profile /> } />
-
                     <Route path='chat' element={ <Chat /> } />
-
                     <Route path='notifications' element={ <Notifications /> } />
-
                     <Route path='settings' element={ <Settings /> } />
                 </Route>
             </Routes>
