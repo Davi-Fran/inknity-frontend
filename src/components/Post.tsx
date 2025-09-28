@@ -14,7 +14,7 @@ export const Post = () => {
                 <div className='size-12 bg-center bg-cover rounded-full bg-[url(/src/assets/img/userPhoto.png)]'></div>
 
                 <div>
-                    <Link to={`/user/${username}/profile`} className='leading-tight text-lg font-bold hover:text-inknity-purple hover:cursor-pointer'>John Doe</Link>
+                    <Link to={`/user/${username}/profile/posts`} className='leading-tight text-lg font-bold hover:text-inknity-purple hover:cursor-pointer'>John Doe</Link>
                     <p className='leading-tight text-sm text-inknity-white/50 m-0'>@johndoe</p>
                 </div>
             </section>
