@@ -36,7 +36,7 @@ const Login = () => {
                     
                     <button 
                         type='submit'
-                        onClick={() => navigation('/user/idk/feed?pfrom=foryou')}
+                        onClick={() => navigation('/user/johndoe/feed/foryou')}
                         className='formButton w-5/6 py-3 px-2 mb-3 transtion-all duration-200 md:w-1/2'
                     >Entrar</button>
 

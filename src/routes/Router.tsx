@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route  } from 'react-router'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Welcome from '../pages/Welcome'
 import Login from '../pages/Login'
 import SignUp from '../pages/SignUp'
@@ -24,12 +24,26 @@ export const Router = () => {
                 <Route path='selectStyles' element={ <SelectStyles /> } />
 
                 <Route path='user/:username' element={ <Menu /> }>
-                    <Route path='feed' element={ <Feed /> } />
+                    <Route path='feed' element={ <Feed /> }>
+                        <Route path='foryou' element={ <></> } />
+
+                        <Route path='following' element={ <></> } />
+                    </Route>
+
                     <Route path='search' element={ <Search /> } />
+
                     <Route path='writePost' element={ <WritePost /> } />
-                    <Route path='profile' element={ <Profile /> } />
+
+                    <Route path='profile' element={ <Profile /> }>
+                        <Route path='posts' element={ <></> } />
+                        
+                        <Route path='comissions' element={ <></> } />
+                    </Route>
+
                     <Route path='chat' element={ <Chat /> } />
+
                     <Route path='notifications' element={ <Notifications /> } />
+                    
                     <Route path='settings' element={ <Settings /> } />
                 </Route>
             </Routes>
