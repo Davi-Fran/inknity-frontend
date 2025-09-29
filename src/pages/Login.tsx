@@ -4,6 +4,7 @@ import { useAuthentication } from '../contexts/AuthContext'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useState } from 'react'
 
 const schema = z.object({
     email: z.string().email({ message: 'Informe um e-mail válido!' }),
@@ -13,6 +14,8 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 
 const Login = () => {
+    const [show, setShow] = useState(false)
+
     const { authUser } = useAuthentication()
 
     const navigation = useNavigate()
@@ -27,7 +30,7 @@ const Login = () => {
         if (success) {
             navigation('/user/johndoe/feed/foryou')
         } else {
-
+            setShow(true)
         }
     }
 
@@ -45,22 +48,30 @@ const Login = () => {
                         type='email'
                         placeholder='Email'
                         {...register('email')}
-                        className='input w-5/6 py-2.5 px-2 transtion-all duration-200 mb-4 md:w-1/2'
+                        className={`input w-5/6 py-2.5 px-2 transtion-all duration-200 ${errors?.email ? 'border-red-600' : 'mb-4'} md:w-1/2`}
                     />
 
                     {
-                        errors?.email && <p className='text-sm text-red-600'>{errors.email.message}</p>
+                        errors?.email && (
+                            <div className='w-5/6 mb-4 mt-2 md:w-1/2'>
+                                <p className='text-sm text-red-600'>{errors.email.message}</p>
+                            </div>
+                        )
                     }
 
                     <input 
                         type='password'
                         placeholder='Senha'
                         {...register('password')}
-                        className='input w-5/6 py-2.5 px-2 mb-14  md:w-1/2 md:mb-4'
+                        className={`input w-5/6 py-2.5 px-2 ${errors?.password ? 'border-red-600' : 'mb-14 md:mb-4'} transition-all duration-200 md:w-1/2`}
                     />
 
                     {
-                        errors?.password && <p className='text-sm text-red-600'>{errors.password.message}</p>
+                        errors?.password && (
+                            <div className='w-5/6 mb-14 mt-2 md:w-1/2 md:mb-4'>
+                                <p className='text-sm text-red-600'>{errors.password.message}</p>
+                            </div>
+                        )
                     }
                     
                     <button 
@@ -75,8 +86,14 @@ const Login = () => {
                             className='ml-1 text-inknity-purple hover:underline'
                         >Cadastre-se!</Link>
                     </p>
+
+                    {
+                        show && <p className='mt-10 text-sm text-red-600'>Ocorreu um erro na autenticação!</p>
+                    }
                 </main>
             </form>
+
+           
         </div>
     )
 }

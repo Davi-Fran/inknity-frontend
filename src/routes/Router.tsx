@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router'
+import { RouteProtection } from './RouteProtection'
 import Welcome from '../pages/Welcome'
 import Login from '../pages/Login'
 import SignUp from '../pages/SignUp'
@@ -23,7 +24,11 @@ export const Router = () => {
                 <Route path='createProfile' element={ <CreateProfile /> } />
                 <Route path='selectStyles' element={ <SelectStyles /> } />
 
-                <Route path='user/:username' element={ <Menu /> }>
+                <Route path='user/:username' element={
+                    <RouteProtection>
+                        <Menu />
+                    </RouteProtection>
+                }>
                     <Route path='feed' element={ <Feed /> }>
                         <Route path='foryou' element={ <></> } />
 

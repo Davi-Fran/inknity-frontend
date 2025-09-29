@@ -8,7 +8,7 @@ const Feed = () => {
     const handleActivate = (route: string) => `/user/${username}/feed/${route}` === location.pathname
 
     return (
-        <div className='h-13/14 w-full md:h-full md:w-13/14 md:flex md:flex-col md:items-center'>
+        <div className='h-13/14 w-full md:h-full md:w-11/12 md:flex md:flex-col md:items-center'>
             <header className='w-full h-1/6 md:flex md:items-center md:h-1/10'>
                 <section className='flex items-center justify-between w-full h-1/2 bg-inknity-background-2 px-5 md:hidden'>
                     <div className='w-1/2 h-full bg-cover bg-center bg-[url(/src/assets/img/inline.svg)]'></div>
