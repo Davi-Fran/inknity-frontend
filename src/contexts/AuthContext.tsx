@@ -1,6 +1,4 @@
-import { createContext, useState, useEffect, useContext } from 'react'
-import { authentication } from '../firebase/FirebaseConnection'
-import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth'
+/* import { createContext, useState, useEffect, useContext } from 'react'
 import { type User } from '../types/User'
 
 type AuthContextType = {
@@ -72,4 +70,4 @@ export const AuthProvider = ({ children }: Props) => {
     )
 }
 
-export const useAuthentication = (): AuthContextType => useContext(AuthContext)
+export const useAuthentication = (): AuthContextType => useContext(AuthContext) */

@@ -1,12 +1,9 @@
-import { useAuthentication } from '../contexts/AuthContext'
 import { Link, useParams, useLocation, useNavigate } from 'react-router'
 import { Post } from '../components/Post'
 import standard from '../assets/img/standard.svg'
 import { ProfileTag } from '../components/ProfileTag'
 
 const Profile = () => {
-    const { loggedUser, loggout } = useAuthentication()
-
     const { username } = useParams()
     const location = useLocation()
     const navigation = useNavigate()
@@ -14,7 +11,7 @@ const Profile = () => {
     const handleActive = (route: string) => `/user/${username}/profile/${route}` === location.pathname
 
     const handleLoggout = async () => {
-        let success = await loggout()
+        let success = true
 
         if (success) {
             navigation('/login')
@@ -41,7 +38,7 @@ const Profile = () => {
                         <div className='size-25 rounded-full border-4 border-inknity-dark-purple bg-cover bg-center bg-[url(/src/assets/img/userPhoto.png)]'></div>
 
                         <p className='mt-2 text-2xl font-bold'>John Doe</p>  
-                        <p className='text-sm'>{loggedUser?.email}</p>
+                        <p className='text-sm'>@johndoe</p>
                     </div>
 
                     <div className='flex gap-3 items-center w-1/2 justify-end'>

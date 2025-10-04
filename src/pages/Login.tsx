@@ -1,6 +1,5 @@
 import { Art } from '../components/Art'
 import { Link, useNavigate } from 'react-router'
-import { useAuthentication } from '../contexts/AuthContext'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -16,8 +15,6 @@ type FormValues = z.infer<typeof schema>
 const Login = () => {
     const [show, setShow] = useState(false)
 
-    const { authUser } = useAuthentication()
-
     const navigation = useNavigate()
 
     const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
@@ -25,7 +22,7 @@ const Login = () => {
     })
 
     const handleLogin = async (data: FormValues) => {
-        let success = await authUser(data.email, data.password)
+        let success = true
 
         if (success) {
             navigation('/user/johndoe/feed/foryou')
