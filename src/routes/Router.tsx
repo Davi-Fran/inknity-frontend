@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { RouteProtection } from './RouteProtection'
 import Welcome from '../pages/Welcome'
 import Login from '../pages/Login'
@@ -7,12 +7,15 @@ import CreateProfile from '../pages/CreateProfile'
 import SelectStyles from '../pages/SelectStyles'
 import Feed from '../pages/Feed'
 import { Menu } from '../components/Menu'
-import { Search } from '../components/Search'
+import Search from '../pages/Search'
 import { WritePost } from '../components/WritePost'
 import Profile from '../pages/Profile'
-import Chat from '../pages/Chat'
 import Notifications from '../pages/Notifications'
 import Settings from '../pages/Settings'
+import ChatMenu from '../pages/ChatMenu'
+import Chat from '../pages/Chat'
+
+
 
 export const Router = () => {
     return (
@@ -45,7 +48,9 @@ export const Router = () => {
                         <Route path='comissions' element={ <></> } />
                     </Route>
 
-                    <Route path='chat' element={ <Chat /> } />
+                    <Route path='chat' element={<ChatMenu />} />
+
+                    <Route path='chat/:userTarget' element={<Chat />} />
 
                     <Route path='notifications' element={ <Notifications /> } />
                     
