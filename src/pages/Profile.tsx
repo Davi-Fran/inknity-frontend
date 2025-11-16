@@ -3,16 +3,30 @@ import { useState } from 'react'
 import { Post } from '../components/Post'
 import standard from '../assets/img/standard.svg'
 import { ProfileTag } from '../components/ProfileTag'
+import { CommentsModal } from '../components/CommentsModal'
+import { CreatePostModal } from '../components/CreatePostModal'
 
 const Profile = () => {
   const { username } = useParams()
   const location = useLocation()
   const navigation = useNavigate()
 
-  const handleActive = (route: string) => `/user/${username}/profile/${route}` === location.pathname
+  const [selectedComments, setSelectedComments] = useState([])
+  const [addCommentFn, setAddCommentFn] = useState(() => () => {})
+  const [openComments, setOpenComments] = useState(false)
+
+  const [openCreatePost, setOpenCreatePost] = useState(false)
+
+  const handleActive = (route) => `/user/${username}/profile/${route}` === location.pathname
 
   const handleEditProfile = () => {
     navigation(`/user/${username}/edit-profile`)
+  }
+
+  const handlePublishPost = (data) => {
+    console.log("PUBLICAR POST:", data)
+    // aqui depois integra ao firebase
+    setOpenCreatePost(false)
   }
 
   const [tags, setTags] = useState([
@@ -24,7 +38,7 @@ const Profile = () => {
     { label: 'Cartoon', active: false },
   ])
 
-  const toggleTag = (label: string) => {
+  const toggleTag = (label) => {
     setTags(tags.map(tag =>
       tag.label === label ? { ...tag, active: !tag.active } : tag
     ))
@@ -58,6 +72,25 @@ const Profile = () => {
             >
               Editar Perfil
             </button>
+
+            <button
+              onClick={() => setOpenCreatePost(true)}
+              className="
+                fixed bottom-9 right-15
+                bg-inknity-purple 
+                text-white 
+                size-14
+                rounded-full 
+                flex items-center justify-center
+                text-4xl
+                shadow-lg shadow-inknity-purple/40
+                hover:bg-inknity-purple/80
+                transition
+                z-50"
+            >
+              +
+            </button>
+
           </div>
         </div>
       </section>
@@ -91,8 +124,35 @@ const Profile = () => {
         </div>
 
         <main className='w-full'>
-          <Post />
-          <Post />
+          <Post 
+            onOpenComments={(postComments, addCommentFn) => {
+              setSelectedComments(postComments)
+              setAddCommentFn(() => addCommentFn)
+              setOpenComments(true)
+            }}
+          />
+
+          <Post 
+            onOpenComments={(postComments, addCommentFn) => {
+              setSelectedComments(postComments)
+              setAddCommentFn(() => addCommentFn)
+              setOpenComments(true)
+            }}
+          />
+
+          <CommentsModal
+            open={openComments}
+            onClose={() => setOpenComments(false)}
+            comments={selectedComments}
+            onAddComment={(text) => addCommentFn(text)}
+          />
+
+          <CreatePostModal
+            open={openCreatePost}
+            onClose={() => setOpenCreatePost(false)}
+            onSubmit={(data) => handlePublishPost(data)}
+          />
+
         </main>
       </section>
     </div>

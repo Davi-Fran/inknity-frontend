@@ -14,7 +14,7 @@ import Notifications from '../pages/Notifications'
 import Settings from '../pages/Settings'
 import ChatMenu from '../pages/ChatMenu'
 import Chat from '../pages/Chat'
-
+import Saved from "../pages/Saved";
 
 
 export const Router = () => {
@@ -55,6 +55,9 @@ export const Router = () => {
                     <Route path='notifications' element={ <Notifications /> } />
                     
                     <Route path='settings' element={ <Settings /> } />
+
+                    <Route path="/user/:username/saved" element={ <Saved /> } />
+
                 </Route>
             </Routes>
         </BrowserRouter>

@@ -1,20 +1,30 @@
 import standard from '../assets/img/standard.svg'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router'
+import { Bookmark, BookmarkCheck } from "lucide-react"
 
-export const Post = () => {
+export const Post = ({ onOpenComments }) => {
     const [wasLiked, setWasLiked] = useState(false)
+    const [wasSaved, setWasSaved] = useState(false)
+
     const { username } = useParams()
 
     const handleLike = () => setWasLiked(!wasLiked)
+    const handleSave = () => setWasSaved(!wasSaved)
 
     return (
         <article className='w-full h-full bg-inknity-dark-purple border-t border-t-inknity-white/20 md:mb-2 md:h-155 md:rounded'>
+            
             <section className='flex items-center w-full h-1/8 pl-5 gap-3'>
                 <div className='size-12 bg-center bg-cover rounded-full bg-[url(/src/assets/img/userPhoto.png)]'></div>
 
                 <div>
-                    <Link to={`/user/${username}/profile/posts`} className='leading-tight text-lg font-bold hover:text-inknity-purple hover:cursor-pointer'>John Doe</Link>
+                    <Link 
+                        to={`/user/${username}/profile/posts`} 
+                        className='leading-tight text-lg font-bold hover:text-inknity-purple hover:cursor-pointer'
+                    >
+                        John Doe
+                    </Link>
                     <p className='leading-tight text-sm text-inknity-white/50 m-0'>@johndoe</p>
                 </div>
             </section>
@@ -24,7 +34,9 @@ export const Post = () => {
             </section>
 
             <section className='w-full h-2/8 p-3'>
+              
                 <div className='flex gap-3 mb-2'>
+                    
                     <svg 
                         xmlns='http://www.w3.org/2000/svg'
                         fill='none'
@@ -43,23 +55,26 @@ export const Post = () => {
                         viewBox='0 0 24 24' 
                         strokeWidth={1.5} 
                         stroke='currentColor' 
+                        onClick={() => onOpenComments([], () => {})}
                         className='size-7 hover:text-inknity-purple hover:cursor-pointer md:transition-all md:duration-300'
                     >
                         <path strokeLinecap='round' strokeLinejoin='round' d='M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z' />
                     </svg>
 
-                    <svg 
-                        xmlns='http://www.w3.org/2000/svg' 
-                        fill='none' 
-                        viewBox='0 0 24 24' 
-                        strokeWidth={1.5} 
-                        stroke='currentColor' 
-                        className='size-7 hover:text-inknity-purple hover:cursor-pointer md:transition-all md:duration-300'
-                    >
-                        <path strokeLinecap='round' strokeLinejoin='round' d='M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5' />
-                    </svg>
-                </div>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={handleSave}
+                            className="hover:text-inknity-purple transition"
+                        >
+                            {wasSaved ? (
+                                <BookmarkCheck className="size-6.5 text-inknity-purple" />
+                            ) : (
+                                <Bookmark className="size-6.5 text-inknity-white/90" />
+                            )}
+                        </button>
+                    </div>
 
+                </div>
                 <p className='text-sm'>Lorem ipsum dolor sit, amet.</p>
             </section>
         </article>

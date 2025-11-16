@@ -1,54 +1,42 @@
 import { NavLink, Link, useParams } from 'react-router-dom'
 
-const settingsItems = [
-  {
-    title: 'Itens Salvos',
-    icon: '💾',
-    link: 'saved',
-    desc: 'Veja e gerencie o conteúdo que você salvou',
-  },
-  {
-    title: 'Preferências de Conteúdo',
-    icon: '🎭',
-    link: 'content',
-    desc: 'Ajuste o tipo de conteúdo que aparece pra você',
-  },
-  {
-    title: 'Atualizar Senha',
-    icon: '🔐',
-    link: 'password',
-    desc: 'Altere sua senha de forma segura',
-  },
-  {
-    title: 'Insights',
-    icon: '📊',
-    link: 'insights',
-    desc: 'Acompanhe o desempenho das suas postagens',
-  },
-  {
-    title: 'Favoritos',
-    icon: '⭐',
-    link: 'favorites',
-    desc: 'Veja suas postagens favoritas',
-  },
-  {
-    title: 'Pedidos e Pagamentos',
-    icon: '💳',
-    link: 'orders',
-    desc: 'Gerencie compras e transações',
-  },
-]
-
 const Settings = () => {
   const { username } = useParams()
 
+  const settingsItems = [
+    {
+      title: 'Itens Salvos',
+      icon: '💾',
+      link: `/user/${username}/saved`,   
+      desc: 'Veja e gerencie o conteúdo que você salvou',
+    },
+    {
+      title: 'Preferências de Conteúdo',
+      icon: '🎭',
+      link: `/user/${username}/settings/content`,
+      desc: 'Ajuste o tipo de conteúdo que aparece pra você',
+    },
+    {
+      title: 'Atualizar Senha',
+      icon: '🔐',
+      link: `/user/${username}/settings/password`,
+      desc: 'Altere sua senha de forma segura',
+    },
+    {
+      title: 'Pedidos e Pagamentos',
+      icon: '💳',
+      link: `/user/${username}/settings/orders`,
+      desc: 'Gerencie compras e transações',
+    },
+  ]
+
   return (
-    <div className='h-13/14 w-full md:h-full md:w-11/12 md:flex md:flex-col md:items-center'>
+    <div className='h-screen w-full md:w-11/12 md:flex md:flex-col md:items-center'>
 
       <header className='w-full h-1/6 md:flex md:items-center md:h-1/10'>
   
         <section className='flex items-center justify-between w-full h-1/2 bg-inknity-background-2 px-5 md:hidden'>
-          <div className='w-1/2 h-full bg-cover bg-center bg-[url(/src/assets/img/inline.svg)]'></div>
+          <div className='min-h-full w-full md:w-11/12 md:flex md:flex-col md:items-center my-10'></div>
 
           <div className='flex items-center w-1/4 h-full gap-2 mr-2'>
             <NavLink to={`/user/${username}/notifications`}>
@@ -70,12 +58,12 @@ const Settings = () => {
         </section>
       </header>
 
-      <main className='w-full h-5/6 overflow-auto md:w-5/8 md:px-8 md:pt-5 md:bg-inknity-background md:rounded-md md:h-full text-white'>
+      <main className='w-full overflow-auto md:w-5/8 md:px-8 md:pt-5 md:bg-inknity-background md:rounded-md text-white pb-20 md:pb-1'>
         <div className='flex flex-col gap-4 py-6'>
           {settingsItems.map((item, i) => (
             <Link
               key={i}
-              to={`/user/${username}/settings/${item.link}`}
+              to={item.link}
               className='flex items-center justify-between p-4 rounded-md bg-inknity-background-2 hover:bg-inknity-purple/20 transition-all duration-300 cursor-pointer border border-transparent hover:border-inknity-purple/30'
             >
               <div className='flex items-center gap-4'>
@@ -90,7 +78,7 @@ const Settings = () => {
           ))}
         </div>
 
-        <div className='flex justify-center py-6'>
+        <div className='flex justify-center py-8'>
           <button className='text-sm text-inknity-white/60 hover:text-inknity-yellow transition'>
             Sair da conta
           </button>
