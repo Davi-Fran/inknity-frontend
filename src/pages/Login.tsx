@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 
 const schema = z.object({
     email: z.string().email({ message: 'Informe um e-mail válido!' }),
@@ -13,6 +14,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 
 const Login = () => {
+    const { login, isAuthenticated, user } = useAuth()
     const [show, setShow] = useState(false)
 
     const navigation = useNavigate()
@@ -22,13 +24,17 @@ const Login = () => {
     })
 
     const handleLogin = async (data: FormValues) => {
-        let success = true
-
-        if (success) {
-            navigation('/user/johndoe/feed/foryou')
-        } else {
-            setShow(true)
+        try {
+            await login(data.email, data.password)
+            navigation(`/user/${user?.username}/feed/foryou`)
+        } catch (error) {
+            console.log('deu erro')
+            // modal
         }
+    }
+
+    if (isAuthenticated) {
+        navigation(`/user/${user?.username}/feed/foryou`)
     }
 
     return (

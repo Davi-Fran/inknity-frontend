@@ -1,73 +1,91 @@
-/* import { createContext, useState, useEffect, useContext } from 'react'
+import { createContext, useState, useEffect, useContext } from 'react'
 import { type User } from '../types/User'
+import { api, setAuthToken } from '../services/api'
 
-type AuthContextType = {
-    loggedUser: User | null;
-    loading: boolean;
-    createUserAuth: (email: string, password: string) => Promise<boolean>;
-    authUser: (email: string, password: string) => Promise<boolean>;
-    loggout: () => Promise<boolean>
+interface AuthContextData {
+    user: User | null,
+    token: string | null,
+    isAuthenticated: boolean,
+    isLoading: boolean,
+    login: (email: string, password: string) => Promise<void>,
+    logout: () => void
 }
 
-const AuthContext = createContext<AuthContextType>({
-    loggedUser: null,
-    loading: true,
-    createUserAuth: async () => false,
-    authUser: async () => false,
-    loggout: async () => false,
-})
+const AuthContext = createContext<AuthContextData>({} as AuthContextData)
 
-type Props = { children: React.ReactNode }
-export const AuthProvider = ({ children }: Props) => {
-    const [loggedUser, setLoggedUser] = useState<User | null>(null)
-    const [loading, setLoading] = useState(true)
+interface props {
+    children: React.ReactNode
+}
+
+export const AuthProvider: React.FC<props> = ({ children }) => {
+    const [user, setUser] = useState<User | null>(null)
+    const [token, setToken] = useState<string | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(authentication, async (firebaseUser) => {
-            if (firebaseUser) {
-                setLoggedUser({ uid: firebaseUser.uid, email: firebaseUser.email })
-                setLoading(false)
-            }
-        })
+        const loadStoredAuth = () => {
+            const storedToken = localStorage.getItem('@inknity:token')
+            const storedUser = localStorage.getItem('@inknity:user')
 
-        return () => unsubscribe()
+            if (storedToken && storedUser) {
+                const parsedUser = JSON.parse(storedUser)
+
+                setToken(storedToken)
+                setUser(parsedUser)
+                setAuthToken(storedToken)
+            }
+            setIsLoading(false)
+        }
+
+        loadStoredAuth()
     }, [])
 
-    const createUserAuth = async (email: string, password: string) => {
+    const login = async (email: string, password: string) => {
         try {
-            await createUserWithEmailAndPassword(authentication, email, password)
-            return true
-        } catch (e) {
-            console.error(`Erro na criação do usuário! (${e})`)
-            return false
+            const responseOne = await api.post('/auth/login', { email, password })
+            const { token, user } = responseOne.data;
+
+            localStorage.setItem('@inknity:token', token)
+            localStorage.setItem('@inknity:user', JSON.stringify(user))
+
+            setAuthToken(token)
+            setToken(token)
+            setUser(user)
+        } catch (error) {
+            console.error(error)
+            throw new Error('Email ou senha inválidos!')
         }
     }
 
-    const authUser = async (email: string, password: string) => {
-        try {
-            await signInWithEmailAndPassword(authentication, email, password)
-            return true
-        } catch (e) {
-            console.error(`Erro na autenticação do usuário! (${e})`)
-            return false
-        }
-    }
+    const logout = () => {
+        localStorage.removeItem('@inknity:token')
+        localStorage.removeItem('@inknity:user')
 
-    const loggout = async () => {
-        try {
-            await signOut(authentication)
-            return true
-        } catch (e) {
-            console.error(`Erro ao deslogar o usuário! (${e})`)
-            return false
-        }
+        setAuthToken(null)
+        setToken(null)
+        setUser(null)
     }
 
     return (
-        <AuthContext.Provider value={{ loggedUser, loading, createUserAuth, authUser, loggout }}>
+        <AuthContext.Provider value={{
+            user,
+            token,
+            isAuthenticated: !!user,
+            isLoading,
+            login,
+            logout
+        }}>
             {children}
         </AuthContext.Provider>
     )
 }
 
-export const useAuthentication = (): AuthContextType => useContext(AuthContext) */
+export const useAuth = (): AuthContextData => {
+    const context = useContext(AuthContext)
+
+    if (!context) {
+        throw new Error('useAuth deve ser usado dentro de um provider')
+    }
+
+    return context
+}
