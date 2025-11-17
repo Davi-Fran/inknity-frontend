@@ -28,8 +28,7 @@ const Login = () => {
             await login(data.email, data.password)
             navigation(`/user/${user?.username}/feed/foryou`)
         } catch (error) {
-            console.log('deu erro')
-            // modal
+            console.error(`Deu ruim ${error}`)
         }
     }
 

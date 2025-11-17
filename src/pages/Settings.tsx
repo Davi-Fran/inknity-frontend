@@ -1,7 +1,10 @@
-import { NavLink, Link, useParams } from 'react-router-dom'
+import { NavLink, Link, useParams, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 const Settings = () => {
   const { username } = useParams()
+  const navigation = useNavigate()
+  const { logout } = useAuth()
 
   const settingsItems = [
     {
@@ -29,6 +32,11 @@ const Settings = () => {
       desc: 'Gerencie compras e transações',
     },
   ]
+
+  const handleLogout = () => {
+    logout()
+    navigation('/login')
+  }
 
   return (
     <div className='h-screen w-full md:w-11/12 md:flex md:flex-col md:items-center'>
@@ -79,7 +87,10 @@ const Settings = () => {
         </div>
 
         <div className='flex justify-center py-8'>
-          <button className='text-sm text-inknity-white/60 hover:text-inknity-yellow transition'>
+          <button 
+            className='text-sm text-inknity-white/60 hover:text-inknity-yellow transition cursor-pointer'
+            onClick={handleLogout}
+          >
             Sair da conta
           </button>
         </div>

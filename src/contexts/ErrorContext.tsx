@@ -1,12 +1,20 @@
 import { createContext, useContext, useState } from "react";
 import { ErrorModal } from "../components/ErrorModal";
 
-const ErrorContext = createContext(null);
+interface ErrorContextData {
+  triggerError: (msg: string | null) => void
+}
 
-export const ErrorProvider = ({ children }) => {
-  const [message, setMessage] = useState(null);
+const ErrorContext = createContext<ErrorContextData | null>(null);
 
-  const triggerError = (msg) => setMessage(msg);
+interface Props {
+  children: React.ReactNode
+}
+
+export const ErrorProvider = ({ children }: Props) => {
+  const [message, setMessage] = useState<string | null>(null);
+
+  const triggerError = (msg: string | null) => setMessage(msg);
   const clearError = () => setMessage(null);
 
   return (
