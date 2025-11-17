@@ -124,11 +124,12 @@ const Profile = () => {
         </div>
 
         <main className='w-full'>
-          <Post 
+          {/* <Post 
             onOpenComments={(postComments, addCommentFn) => {
               setSelectedComments(postComments)
               setAddCommentFn(() => addCommentFn)
               setOpenComments(true)
+              data={
             }}
           />
 
@@ -138,7 +139,7 @@ const Profile = () => {
               setAddCommentFn(() => addCommentFn)
               setOpenComments(true)
             }}
-          />
+          /> */}
 
           <CommentsModal
             open={openComments}

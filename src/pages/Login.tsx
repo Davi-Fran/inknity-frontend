@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuth } from '../contexts/AuthContext'
+import { useError } from '../contexts/ErrorContext'
 
 const schema = z.object({
     email: z.string().email({ message: 'Informe um e-mail válido!' }),
@@ -14,6 +15,7 @@ type FormValues = z.infer<typeof schema>
 
 const Login = () => {
     const { login, isAuthenticated, user } = useAuth()
+    const { triggerError } = useError()
 
     const navigation = useNavigate()
 
@@ -26,7 +28,8 @@ const Login = () => {
             await login(data.email, data.password)
             navigation(`/user/${user?.username}/feed/foryou`)
         } catch (error) {
-            console.error(`Deu ruim ${error}`)
+            console.error(`Erro: ${error}`)
+            triggerError('Email ou senha incorretos!')
         }
     }
 

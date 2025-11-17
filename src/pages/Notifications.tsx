@@ -6,7 +6,7 @@ const Notifications = () => {
   const { username } = useParams()
 
   const [notifications, setNotifications] = useState<
-    { id: number; type: string; message: string; time: string; read: boolean }[]
+    { id: string; type: string; message: string; time: string; read: boolean }[]
   >([])
 
   const [selectionMode, setSelectionMode] = useState(false)
@@ -15,9 +15,9 @@ const Notifications = () => {
   // carregar dados fake
   useEffect(() => {
     setNotifications([
-      { id: 1, type: 'like', message: 'gaby curtiu sua publicação!', time: '2m atrás', read: false },
-      { id: 2, type: 'comment', message: 'luna comentou: “amei seu estilo!! 😍”', time: '10m atrás', read: true },
-      { id: 3, type: 'follow', message: 'kai começou a te seguir!', time: '1h atrás', read: true },
+      { id: '3', type: 'like', message: 'gaby curtiu sua publicação!', time: '2m atrás', read: false },
+      { id: '2', type: 'comment', message: 'luna comentou: “amei seu estilo!! 😍”', time: '10m atrás', read: true },
+      { id: '1', type: 'follow', message: 'kai começou a te seguir!', time: '1h atrás', read: true },
     ])
   }, [])
 

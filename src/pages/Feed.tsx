@@ -1,20 +1,59 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { NavLink, Link, useParams, useLocation } from 'react-router'
 import { Post } from '../components/Post'
 import { CommentsModal } from '../components/CommentsModal'
+import { type Post as TypePost } from '../types/Post'
+import { api } from '../services/api'
 
 const Feed = () => {
     const { username } = useParams()
     const location = useLocation()
 
+    const [posts, setPosts] = useState<TypePost[] | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
+
     const [selectedComments, setSelectedComments] = useState([])
     const [addCommentFn, setAddCommentFn] = useState(() => () => {})
 
+    useEffect(() => {
+        const fetchPosts = async () => {
+            setIsLoading(true)
+            setPosts([])
+            let endpoint = '';
+
+            if (location.pathname === `/user/${username}/feed/foryou`) {
+                endpoint = '/posts?type=feed'
+            } else if (location.pathname === `/user/${username}/feed/following`) {
+                endpoint = '/posts?type=following'
+            } else {
+                setIsLoading(false)
+                return
+            }
+
+            try {
+                const response = await api.get(endpoint)
+                const data = response.data
+
+                if (data && data.posts) {
+                    setPosts(data.posts)
+                } else {
+                    setPosts([])
+                }
+            } catch (error) {
+                setPosts([])
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        fetchPosts()
+    }, [location.pathname])
+
     const [openComments, setOpenComments] = useState(false)
 
+    const handleActivate = (route: string) => `/user/${username}/feed/${route}` === location.pathname
 
-    const handleActivate = (route: string) =>
-        `/user/${username}/feed/${route}` === location.pathname
+    
 
     return (
         <div className="h-13/14 w-full md:h-full md:w-11/12 md:flex md:flex-col md:items-center">
@@ -85,36 +124,34 @@ const Feed = () => {
                 </section>
             </header>
 
-            <main className="w-full h-5/6 overflow-auto md:w-5/8 md:px-8 md:pt-5 md:bg-inknity-background md:rounded-md md:h-full">
-                <Post 
-                    onOpenComments={(postComments, addCommentFn) => {
-                        setSelectedComments(postComments)
-                        setAddCommentFn(() => addCommentFn)
-                        setOpenComments(true)
-                    }}
-                />
-                <Post 
-                    onOpenComments={(postComments, addCommentFn) => {
-                        setSelectedComments(postComments)
-                        setAddCommentFn(() => addCommentFn)
-                        setOpenComments(true)
-                    }}
-                />
-                <Post 
-                    onOpenComments={(postComments, addCommentFn) => {
-                        setSelectedComments(postComments)
-                        setAddCommentFn(() => addCommentFn)
-                        setOpenComments(true)
-                    }}
-                />
+            <main className="w-full flex flex-col gap-28 h-5/6 overflow-auto md:w-5/8 md:px-8 md:pt-5 md:bg-inknity-background md:rounded-md md:h-full">
+                {
+                    isLoading && (
+                        <p className='text-center'>Carregando posts...</p>
+                    )
+                }
 
-
-
-                <div className="flex justify-center items-center w-full h-1/6 ">
+                {
+                    !isLoading && posts.length > 0 && (
+                        posts.map(post => (
+                            <Post 
+                                key={post.id}
+                                onOpenComments={(postComments, addCommentFn) => {
+                                    setSelectedComments(postComments)
+                                    setAddCommentFn(() => addCommentFn)
+                                    setOpenComments(true)
+                                }}
+                                data={post}
+                            />
+                        ))
+                    )
+                }
+                
+                {/* <div className="flex justify-center items-center w-full h-1/6 ">
                     <button className="bg-inknity-purple py-3 px-10 rounded font-bold hover:cursor-pointer hover:bg-inknity-purple/80 hover:text-inknity-white/80 hover:rounded-md transition-all duration-300 shadow-[0_0_8px] shadow-inknity-purple">
                         Ver mais
                     </button>
-                </div>
+                </div> */}
             </main>
 
             <CommentsModal
