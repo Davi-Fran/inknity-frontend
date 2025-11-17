@@ -6,9 +6,9 @@ const App = () => {
   return (
     <ErrorProvider>
       <AuthProvider>
-      <Router />
+        <Router />
+      </AuthProvider>
     </ErrorProvider>
-    </AuthProvider>
   )
 }
 
