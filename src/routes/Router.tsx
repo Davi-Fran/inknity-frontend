@@ -28,9 +28,9 @@ export const Router = () => {
                 <Route path='selectStyles' element={ <SelectStyles /> } />
 
                 <Route path='user/:username' element={
-                    <RouteProtection>
-                        <Menu />
-                    </RouteProtection>
+                        <RouteProtection>
+                            <Menu />
+                        </RouteProtection>
                 }>
                     <Route path='feed' element={ <Feed /> }>
                         <Route path='foryou' element={ <></> } />
@@ -44,7 +44,7 @@ export const Router = () => {
 
                     <Route path='profile' element={ <Profile /> }>
                         <Route path='posts' element={ <></> } />
-                        
+                                
                         <Route path='comissions' element={ <></> } />
                     </Route>
 
@@ -53,7 +53,7 @@ export const Router = () => {
                     <Route path='chat/:userTarget' element={<Chat />} />
 
                     <Route path='notifications' element={ <Notifications /> } />
-                    
+                            
                     <Route path='settings' element={ <Settings /> } />
 
                     <Route path="/user/:username/saved" element={ <Saved /> } />
