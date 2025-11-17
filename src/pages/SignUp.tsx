@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useAuth } from '../contexts/AuthContext'
 
 const schema = z.object({
     email: z.string().email({ message: 'Informe um e-mail válido!' }),
@@ -18,6 +19,12 @@ const SignUp = () => {
     })
 
     const navigation = useNavigate()
+    
+    const { isAuthenticated, user } = useAuth()
+
+    if (isAuthenticated) {
+        navigation(`/user/${user?.username}/feed/foryou`)
+    }
 
     const handleSignUp = (data: FormValues) => {
         if (data.password === data.confirmPassword) {

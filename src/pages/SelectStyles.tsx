@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router'
 import { Art } from '../components/Art'
 import { Tag } from '../components/Tag'
 import { type TagType } from '../types/Tag'
+import { useAuth } from '../contexts/AuthContext'
 
 const SelectStyles = () => {
     const [addStyle, setAddStyle] = useState('')
@@ -21,6 +22,12 @@ const SelectStyles = () => {
     ])
 
     const navigation = useNavigate()
+
+    const { isAuthenticated, user } = useAuth()
+
+    if (isAuthenticated) {
+        navigation(`/user/${user?.username}/feed/foryou`)
+    }
 
     useEffect(() => {
         window.addEventListener('resize', () => setIsMobile(window.innerWidth < 768))

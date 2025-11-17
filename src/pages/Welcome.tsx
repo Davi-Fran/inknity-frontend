@@ -1,9 +1,16 @@
 import standard from '../assets/img/standard.svg'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router'
+import { useAuth } from '../contexts/AuthContext'
 
 const Welcome = () => {
     const navigation = useNavigate()
+
+    const { isAuthenticated, user } = useAuth()
+
+    if (isAuthenticated) {
+        navigation(`/user/${user?.username}/feed/foryou`)
+    }
 
     useEffect(() => {
         const handleKeyPress = () => {

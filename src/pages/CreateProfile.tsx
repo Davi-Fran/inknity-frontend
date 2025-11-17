@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { Art } from '../components/Art'
+import { useAuth } from '../contexts/AuthContext'
 
 const CreateProfile = () => {
     const [displayName, setDisplayName] = useState('')
@@ -9,6 +10,12 @@ const CreateProfile = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
 
     const navigation = useNavigate()
+
+    const { isAuthenticated, user } = useAuth()
+
+    if (isAuthenticated) {
+        navigation(`/user/${user?.username}/feed/foryou`)
+    }
 
     useEffect(() => {
         window.addEventListener('resize', () => setIsMobile(window.innerWidth < 768))

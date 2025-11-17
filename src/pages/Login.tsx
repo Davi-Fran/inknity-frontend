@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 
 const schema = z.object({
@@ -15,7 +14,6 @@ type FormValues = z.infer<typeof schema>
 
 const Login = () => {
     const { login, isAuthenticated, user } = useAuth()
-    const [show, setShow] = useState(false)
 
     const navigation = useNavigate()
 
@@ -88,10 +86,6 @@ const Login = () => {
                             className='ml-1 text-inknity-purple hover:underline'
                         >Cadastre-se!</Link>
                     </p>
-
-                    {
-                        show && <p className='mt-10 text-sm text-red-600'>Ocorreu um erro na autenticação!</p>
-                    }
                 </main>
             </form>
 
