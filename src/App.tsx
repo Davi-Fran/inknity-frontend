@@ -1,8 +1,11 @@
 import { Router } from './routes/Router'
+import { ErrorProvider } from './contexts/ErrorContext'
 
 const App = () => {
   return (
-    <Router />
+    <ErrorProvider>
+      <Router />
+    </ErrorProvider>
   )
 }
 

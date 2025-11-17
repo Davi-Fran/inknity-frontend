@@ -64,14 +64,17 @@ export const Post = ({ onOpenComments }) => {
                     <div className="flex items-center gap-3">
                         <button
                             onClick={handleSave}
-                            className="hover:text-inknity-purple transition"
+                            className={`transition hover:text-inknity-purple ${
+                                wasSaved ? "text-inknity-purple" : "text-inknity-white/90"
+                            }`}
                         >
                             {wasSaved ? (
-                                <BookmarkCheck className="size-6.5 text-inknity-purple" />
+                                <BookmarkCheck className="size-6.5" />
                             ) : (
-                                <Bookmark className="size-6.5 text-inknity-white/90" />
+                                <Bookmark className="size-6.5" />
                             )}
                         </button>
+
                     </div>
 
                 </div>
