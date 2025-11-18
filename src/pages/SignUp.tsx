@@ -4,6 +4,8 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuth } from '../contexts/AuthContext'
+import { useSignUp } from '../contexts/SignUpContext'
+import { useState } from 'react'
 
 const schema = z.object({
     email: z.string().email({ message: 'Informe um e-mail válido!' }),
@@ -14,6 +16,8 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 
 const SignUp = () => {
+    const [emailAvailable, setEmailAvailable] = useState('')
+
     const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
         resolver: zodResolver(schema)
     })
@@ -21,14 +25,18 @@ const SignUp = () => {
     const navigation = useNavigate()
     
     const { isAuthenticated, user } = useAuth()
+    
 
     if (isAuthenticated) {
         navigation(`/user/${user?.username}/feed/foryou`)
     }
 
+    // const { data, updateSignUpData, verifyEmail, isLoading } = useSignUp()
+
     const handleSignUp = (data: FormValues) => {
+
         if (data.password === data.confirmPassword) {
-            navigation('/createProfile')
+            /* navigation('/createProfile') */
         } else {
             console.log(errors?.confirmPassword)
         }
