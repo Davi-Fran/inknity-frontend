@@ -73,7 +73,7 @@ const Chat = () => {
                     : 'bg-inknity-background text-inknity-white/90 rounded-bl-none'
                   }`}
                 >
-                  <p className='text-sm'>{msg.text}</p>
+                  <p className='text-sm break-words'>{msg.text}</p>
                   <span className='text-xs text-inknity-white/50 block text-right'>
                     {msg.createdAt?.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>

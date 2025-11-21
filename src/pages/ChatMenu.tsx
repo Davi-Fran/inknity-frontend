@@ -72,7 +72,7 @@ const ChatMenu = () => {
   if (loading) return <div className='p-5 text-white'>Carregando conversas...</div>
 
   return (
-    <div className='flex flex-col w-full h-13/14 bg-inknity-background-2 rounded-md md:w-11/12 md:h-full shadow-md'>
+    <div className='Sflex flex-col w-full h-13/14 bg-inknity-background-2 rounded-md md:w-11/12 md:h-full shadow-md'>
 
       <header className='flex items-center justify-between w-full h-1/10 px-5 bg-inknity-background'>
         {!selectionMode ? (
