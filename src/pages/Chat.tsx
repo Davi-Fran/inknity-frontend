@@ -1,38 +1,37 @@
 import { useState, useEffect, useRef } from 'react'
-import { useParams } from 'react-router'
+import { useLocation, useParams } from 'react-router'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
+import { useChatMessages } from '../hooks/useChatMessages'
+import { useError } from '../contexts/ErrorContext'
+import { api } from '../services/api'
 
 const Chat = () => {
-  const { username, userTarget } = useParams()
-  const [messages, setMessages] = useState<{ sender: string; text: string; time: string }[]>([])
+  const { username, chatId } = useParams()
+  const location = useLocation()
+
+  const targetUsername = location.state?.targetUser || 'Usuário'
+
+  const { user } = useAuth()
+  const { messages, loading } = useChatMessages(chatId)
+
   const [input, setInput] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // substituir pelo banco
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMessages([
-        { sender: userTarget || 'amiga', text: 'oiii! como seria essa arte?', time: '10:32' },
-        { sender: username || 'você', text: 'oii!! tudo bem?? eu gostaria de uma arte para meu novo rpg', time: '10:33' },
-      ])
-    }, 1000)
-    return () => clearTimeout(timer)
-  }, [username, userTarget])
+  const { triggerError } = useError()
 
-
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return
 
-    const newMsg = {
-      sender: username || 'você',
-      text: input,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    }
-
-    setMessages((prev) => [...prev, newMsg])
+    const textToSend = input
     setInput('')
-
-    // aqui entra a chamada ao banco
+    
+    try {
+      await api.post(`/chats/${chatId}/messages`, { text: textToSend })
+    } catch (error) {
+      console.error(`Erro ao enviar a mensagem: ${error}`);
+      triggerError('Erro ao enviar a mensagem!');
+    }
   }
 
   useEffect(() => {
@@ -48,7 +47,7 @@ const Chat = () => {
         </Link>
 
         <h2 className='font-bold text-lg text-inknity-white'>
-          Chat com @{userTarget}
+          Chat com @{targetUsername}
         </h2>
 
         <div className='size-8 rounded-full bg-inknity-purple/50 flex items-center justify-center text-sm text-white font-semibold'>
@@ -57,23 +56,32 @@ const Chat = () => {
       </header>
 
       <main className='flex-1 w-full overflow-y-auto px-4 py-3 space-y-2'>
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`flex w-full ${msg.sender === username ? 'justify-end' : 'justify-start'}`}
-          >
-            <div
-              className={`max-w-[70%] px-4 py-2 rounded-2xl shadow-md ${
-                msg.sender === username
-                  ? 'bg-inknity-purple text-white rounded-br-none'
-                  : 'bg-inknity-background text-inknity-white/90 rounded-bl-none'
-              }`}
-            >
-              <p className='text-sm'>{msg.text}</p>
-              <span className='text-xs text-inknity-white/50 block text-right'>{msg.time}</span>
-            </div>
-          </div>
-        ))}
+        {
+          loading && <p className='text-center text-white/50'>Carregando mensagens...</p>
+        }
+
+        {
+          messages.map(msg => {
+            const isMe = msg.senderId === user?.id
+
+            return (
+              <div key={msg.id} className={`flex w-full ${isMe ? 'justify-end' : 'justify-start'}`}>
+                <div
+                  className={`max-w-[70%] px-4 py-2 rounded-2xl shadow-md ${
+                    isMe 
+                    ? 'bg-inknity-purple text-white rounded-br-none' 
+                    : 'bg-inknity-background text-inknity-white/90 rounded-bl-none'
+                  }`}
+                >
+                  <p className='text-sm'>{msg.text}</p>
+                  <span className='text-xs text-inknity-white/50 block text-right'>
+                    {msg.createdAt?.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+              </div>
+            )
+          })
+        }
         <div ref={messagesEndRef}></div>
       </main>
 

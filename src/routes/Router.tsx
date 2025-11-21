@@ -47,13 +47,13 @@ export const Router = () => {
 
                     <Route path='chat' element={<ChatMenu />} />
 
-                    <Route path='chat/:userTarget' element={<Chat />} />
+                    <Route path='chat/:chatId' element={<Chat />} />
 
                     <Route path='notifications' element={ <Notifications /> } />
                             
                     <Route path='settings' element={ <Settings /> } />
 
-                    <Route path="/user/:username/saved" element={ <Saved /> } />
+                    <Route path="saved" element={ <Saved /> } />
 
                 </Route>
             </Routes>

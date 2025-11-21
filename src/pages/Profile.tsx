@@ -133,8 +133,6 @@ const Profile = () => {
     ))
   }
 
-    
-
   return (
     <div className='min-h-screen bg-inknity-dark-purple text-white overflow-auto md:w-11/12'>
       <header className='relative w-full h-60 bg-[#2a2040] overflow-hidden'>
@@ -214,6 +212,7 @@ const Profile = () => {
                   border
                   transition-all
                   duration-200
+                  cursor-pointer
 
                   ${
                     isFollowing

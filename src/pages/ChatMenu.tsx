@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useError } from '../contexts/ErrorContext'
+import { api } from '../services/api'
 
 interface ChatPreview {
-  user: string
-  lastMessage: string
-  time: string
+  id: string,
+  user: string,
+  avatarUrl: string,
+  lastMessage: string,
+  time: string,
   unread?: number
 }
 
@@ -15,37 +19,57 @@ const ChatMenu = () => {
   const [chats, setChats] = useState<ChatPreview[]>([])
   const [selectionMode, setSelectionMode] = useState(false)
   const [selected, setSelected] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const { triggerError } = useError()
 
   // simulação inicial
   useEffect(() => {
-    setChats([
-      { user: 'luna', lastMessage: 'amg vc viu o post novo?', time: '10:15', unread: 2 },
-      { user: 'sofia', lastMessage: 'tô terminando o projeto 😭', time: '09:42' },
-      { user: 'kaique', lastMessage: 'bom diaaa 💜', time: '08:30' },
-    ])
+    const fetchChats = async () => {
+      try {
+        const response = await api.get('/chats')
+        const result = response.data.chats!;
+
+        const formattetChats = result.map((c: any) => ({
+          id: c.id,
+          user: c.otherUser.username,
+          avatarUrl: c.otherUser.avatarUrl,
+          lastMessage: c.lastMessage || 'Iniciar conversa',
+          time: c.lastMessageTimestamp ? new Date(c.lastMessageTimestamp._seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
+          unread: 0
+        }))
+
+        setChats(formattetChats)
+      } catch (error) {
+        console.error(error)
+        triggerError('Erro ao carregar suas conversas!')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchChats()
   }, [])
 
   // entrar em modo seleção
-  const startSelection = (user: string) => {
+  const startSelection = (id: string) => {
     setSelectionMode(true)
-    setSelected([user])
+    setSelected([id])
   }
 
   // selecionar/deselecionar
-  const toggleSelection = (user: string) => {
-    setSelected(prev =>
-      prev.includes(user)
-        ? prev.filter(u => u !== user)
-        : [...prev, user]
-    )
+  const toggleSelection = (id: string) => {
+    setSelected(prev => prev.includes(id) ? prev.filter(u => u !== id) : [...prev, id])
   }
 
   // apagar só os selecionados
   const deleteSelected = () => {
-    setChats(prev => prev.filter(c => !selected.includes(c.user)))
+    setChats(prev => prev.filter(c => !selected.includes(c.id)))
     setSelected([])
     setSelectionMode(false)
   }
+
+  if (loading) return <div className='p-5 text-white'>Carregando conversas...</div>
 
   return (
     <div className='flex flex-col w-full h-13/14 bg-inknity-background-2 rounded-md md:w-11/12 md:h-full shadow-md'>
@@ -89,35 +113,27 @@ const ChatMenu = () => {
         )}
 
         {chats.map((chat) => {
-          const isSelected = selected.includes(chat.user)
+          const isSelected = selected.includes(chat.id)
 
           return (
             <div
-              key={chat.user}
+              key={chat.id}
               className={`flex items-center justify-between px-5 py-4 transition
                 ${isSelected ? 'bg-inknity-purple/30' : 'hover:bg-inknity-background'}
                 cursor-pointer
               `}
               onClick={() => {
                 if (selectionMode) {
-                  toggleSelection(chat.user)
+                  toggleSelection(chat.id)
                 } else {
-                  navigate(`/user/${username}/chat/${chat.user}`)
+                  navigate(`/user/${username}/chat/${chat.id}`, {
+                    state: { targetUser: chat.user }
+                  })
                 }
               }}
               onContextMenu={(e) => {
                 e.preventDefault()
-                if (!selectionMode) startSelection(chat.user)
-              }}
-              onMouseDown={(e) => {
-                // clique longo (600ms)
-                let timer = setTimeout(() => {
-                  if (!selectionMode) startSelection(chat.user)
-                }, 600)
-
-                const clear = () => clearTimeout(timer)
-                e.target.addEventListener("mouseup", clear, { once: true })
-                e.target.addEventListener("mouseleave", clear, { once: true })
+                if (!selectionMode) startSelection(chat.id)
               }}
             >
               {/* Seleção */}
@@ -135,9 +151,10 @@ const ChatMenu = () => {
 
               {/* Avatar + conteúdo */}
               <div className='flex items-center gap-3 flex-1'>
-                <div className='size-10 rounded-full bg-inknity-purple/40 flex items-center justify-center text-white font-bold'>
-                  {chat.user[0].toUpperCase()}
-                </div>
+                {
+                  <img src={chat.avatarUrl} alt={chat.user} className='size-10 rounded-full object-cover' />
+                }
+
                 <div className='flex flex-col'>
                   <span className='text-inknity-white font-semibold'>@{chat.user}</span>
                   <span className='text-inknity-white/60 text-sm truncate w-40'>
@@ -150,11 +167,11 @@ const ChatMenu = () => {
               {!selectionMode && (
                 <div className='flex flex-col items-end'>
                   <span className='text-xs text-inknity-white/50'>{chat.time}</span>
-                  {chat.unread && chat.unread > 0 && (
+                  {chat.unread && chat.unread > 0 ? (
                     <span className='text-xs bg-inknity-purple text-white rounded-full px-2 mt-1'>
                       {chat.unread}
                     </span>
-                  )}
+                  ) : null}
                 </div>
               )}
             </div>
