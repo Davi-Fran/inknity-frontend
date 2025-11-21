@@ -71,7 +71,7 @@ export const CreatePostModal = ({ open, onClose, onSubmit }) => {
 
         <button
           onClick={handleSubmit}
-          className="bg-inknity-purple w-full py-2 rounded-md font-bold hover:bg-inknity-purple/80 transition disabled:opacity-40"
+          className="bg-inknity-purple w-full py-2 rounded-md font-bold hover:bg-inknity-purple/80 transition"
           disabled={!imageFile || !text.trim()}
         >
           Publicar

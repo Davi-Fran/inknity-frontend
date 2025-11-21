@@ -10,7 +10,7 @@ const Saved = () => {
 
       <header className="relative w-full h-1/12 flex items-center px-5 bg-inknity-background border-b border-inknity-purple/30">
         <Link
-          to={`/user/${username}/feed/foryou`}
+          to={`/user/${username}/settings`}
           className="text-inknity-yellow hover:text-inknity-purple transition"
         >
           ←
