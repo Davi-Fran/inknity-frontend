@@ -36,9 +36,15 @@ const Notifications = () => {
     )
   }
 
-  // deletar selecionados
-  const deleteSelected = () => {
-    setNotifications(prev => prev.filter(n => !selected.includes(n.id)))
+  // deletar TODAS notificações lidas
+  const deleteReadNotifications = () => {
+    const confirmDelete = window.confirm(
+      "Tem certeza? TODAS as notificações lidas serão apagadas."
+    )
+
+    if (!confirmDelete) return
+
+    setNotifications(prev => prev.filter(n => !n.read))
     setSelected([])
     setSelectionMode(false)
   }
@@ -53,8 +59,16 @@ const Notifications = () => {
             <Link to={`/user/${username}/feed/foryou`} className='text-inknity-yellow hover:text-inknity-purple transition'>
               ←
             </Link>
+
             <h2 className='font-bold text-lg text-inknity-white'>Notificações</h2>
-            <div className='size-8'></div>
+
+            <button
+              onClick={deleteReadNotifications}
+              className='text-red-400 hover:text-red-300 transition text-xl'
+              title="Excluir todas as notificações lidas"
+            >
+              🗑️
+            </button>
           </>
         ) : (
           <>
@@ -70,7 +84,7 @@ const Notifications = () => {
             </h2>
 
             <button
-              onClick={deleteSelected}
+              onClick={deleteReadNotifications}
               className='text-red-400 hover:text-red-300 transition text-xl'
             >
               🗑️
