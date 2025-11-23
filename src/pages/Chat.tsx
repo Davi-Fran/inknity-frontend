@@ -51,7 +51,7 @@ const Chat = () => {
         </h2>
 
         <div className='size-8 rounded-full bg-inknity-purple/50 flex items-center justify-center text-sm text-white font-semibold'>
-          💬
+          
         </div>
       </header>
 
