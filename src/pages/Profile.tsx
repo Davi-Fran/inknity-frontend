@@ -1,4 +1,3 @@
-// Profile.tsx
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
 import { ProfileTag } from "../components/ProfileTag";
@@ -19,6 +18,7 @@ type PostItem = {
   body?: string;
   imageUrl?: string | null;
   likes: number;
+  liked?: boolean;
   comments: Comment[];
   price?: number;
   createdAt: string;
@@ -120,6 +120,7 @@ const Profile: React.FC = () => {
       body: data.body || "",
       imageUrl: data.imageFile ? URL.createObjectURL(data.imageFile) : null,
       likes: 0,
+      liked: false,
       comments: [],
       createdAt: new Date().toISOString(),
     };
@@ -161,14 +162,18 @@ const Profile: React.FC = () => {
 
   // Like toggle for posts only (simple increment local)
   const toggleLike = (id: number) => {
-    setPosts((p) =>
-      p.map((x) => {
-        if (x.id !== id) return x;
-        if (x.type !== "post") return x;
-        return { ...x, likes: x.likes + 1 };
-      })
-    );
-  };
+  setPosts((prev) =>
+    prev.map((post) => {
+      if (post.id !== id || post.type !== "post") return post;
+
+      return {
+        ...post,
+        liked: !post.liked,
+        likes: post.liked ? post.likes - 1 : post.likes + 1,
+      };
+    })
+  );
+};
 
   // Comments
   const openCommentsFor = (post: PostItem) => {
@@ -272,8 +277,14 @@ const Profile: React.FC = () => {
                 <>
                   {/* Like */}
                   <div className="flex items-center gap-1.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" onClick={() => onToggleLike(item.id)} className="size-7 hover:text-inknity-purple hover:cursor-pointer transition-all duration-200">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`size-7 hover:text-inknity-purple hover:cursor-pointer transition-all duration-300 
+                    ${ item.liked ? "text-red-500" : "text-gray-400" }`}
+                      fill={item.liked ? "currentColor" : "none"} onClick={() => toggleLike(item.id)}>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733C11.285 4.876 9.623 3.75 7.688 3.75 5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+                      />
                     </svg>
                     <p>{item.likes}</p>
                   </div>

@@ -37,15 +37,29 @@ const Search = () => {
   return (
     <div className='flex flex-col w-full h-13/14 bg-inknity-background-2 rounded-md shadow-md md:w-11/12 md:h-full'>
       
-      <header className='flex items-center justify-between w-full h-1/10 px-5 bg-inknity-background'>
-        <Link to={`/user/${username}/feed/foryou`} className='text-inknity-yellow hover:text-inknity-purple transition'>
-          ←
-        </Link>
-        <h2 className='font-bold text-lg text-inknity-white'>Buscar</h2>
-        <div className='size-8 rounded-full bg-inknity-purple/50 flex items-center justify-center text-sm text-white font-semibold'>
-          🔎
-        </div>
-      </header>
+      
+        <header className='flex items-center justify-between w-full h-1/10 px-5 bg-inknity-background'>
+          <Link to={`/user/${username}/feed/foryou`} className='text-inknity-yellow hover:text-inknity-purple transition'>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="size-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 19.5 8.25 12l7.5-7.5"
+              />
+            </svg>
+          </Link>
+
+          <h2 className='font-bold text-lg text-inknity-white'>Buscar</h2>
+
+          <div className="size-8" />
+        </header>
 
       <section className='w-full px-5 py-3 flex flex-col gap-3 bg-inknity-background'>
         <input

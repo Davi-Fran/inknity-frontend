@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { NavLink, Link, useParams, useLocation } from 'react-router'
+import { NavLink, Link, useParams, useLocation } from 'react-router-dom'
 import { Post } from '../components/Post'
 import { CommentsModal } from '../components/CommentsModal'
 import { type Post as TypePost } from '../types/Post'
@@ -51,7 +51,9 @@ const Feed = () => {
 
     const [openComments, setOpenComments] = useState(false)
 
-    const handleActivate = (route: string) => `/user/${username}/feed/${route}` === location.pathname
+    
+
+    const toggleActivate = (route: string) => `/user/${username}/feed/${route}` === location.pathname
 
     
 
@@ -103,7 +105,7 @@ const Feed = () => {
                     <Link
                         to={`/user/${username}/feed/foryou`}
                         className={`mr-10 ${
-                            handleActivate('foryou')
+                            toggleActivate('foryou')
                                 ? 'text-inknity-yellow border-b border-b-inknity-yellow'
                                 : ''
                         }`}
@@ -114,7 +116,7 @@ const Feed = () => {
                     <Link
                         to={`/user/${username}/feed/following`}
                         className={`${
-                            handleActivate('following')
+                            toggleActivate('following')
                                 ? 'text-inknity-yellow border-b border-b-inknity-yellow'
                                 : ''
                         }`}
@@ -136,11 +138,7 @@ const Feed = () => {
                         posts.map(post => (
                             <Post 
                                 key={post.id}
-                                onOpenComments={(postComments, addCommentFn) => {
-                                    setSelectedComments(postComments)
-                                    setAddCommentFn(() => addCommentFn)
-                                    setOpenComments(true)
-                                }}
+                                onOpenComments={() => setOpenComments(true)}
                                 data={post}
                             />
                         ))
@@ -159,6 +157,7 @@ const Feed = () => {
                 onClose={() => setOpenComments(false)}
                 comments={selectedComments}
                 onAddComment={(text) => addCommentFn(text)}
+                
             />
 
         </div>
