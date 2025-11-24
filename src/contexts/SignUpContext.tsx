@@ -1,94 +1,56 @@
-import { createContext, useState, useContext, useCallback, useMemo } from 'react'
-import { api } from '../services/api'
-import { type SignUpData, type SignUpContextType } from '../types/SignUpTypes'
+import { createContext, useContext, useState, type ReactNode } from 'react'
+import { Navigate, Outlet } from 'react-router'
 
-const initialData: SignUpData = {
-    avatarUrl: '',
-    bio: '',
-    displayName: '',
-    username: '',
-    email: '',
-    password: '',
-    pronouns: '',
-    tags: []
+interface SignUpData {
+    email?: string;
+    password?: string;
+    displayName?: string;
+    username?: string;
+    pronouns?: string;
+    bio?: string;
+    tags?: string[];
 }
 
-const SignUpContext = createContext<SignUpContextType | undefined>(undefined)
+interface SignUpContextType {
+    data: SignUpData,
+    updateData: (newData: Partial<SignUpData>) => void,
+    resetData: () => void
+}
 
-export const useSignUp = () => {
-    const context = useContext(SignUpContext)
+const SignUpContext = createContext<SignUpContextType>({} as SignUpContextType)
 
-    if (context === undefined) {
-        throw new Error('useSignUp deve ser usado dentro de um provider')
+export const SignUpProvider = ({ children }: { children: ReactNode }) => {
+    const [data, setData] = useState<SignUpData>({})
+
+    const updateData = (newData: Partial<SignUpData>) => {
+        setData(prev => ({ ...prev, ...newData }))
     }
 
-    return context
-}
-
-export const SignUpProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [data, setData] = useState<SignUpData>(initialData)
-    const [isLoading, setIsLoading] = useState(false)
-
-    const updateSignUpData = useCallback((newData: Partial<SignUpData>) => {
-        setData(prevData => ({ ...prevData, ...newData }))
-    }, [])
-
-    const verifyEmail = useCallback(async (email: string): Promise<boolean> => {
-        setIsLoading(true)
-        try {
-            const response = await api.post(`/auth/verify?email=${email}`)
-            return response.data.success
-        } catch (error) {
-            console.error('Erro ao verificar email: ', error)
-            return false
-        } finally {
-            setIsLoading(false)
-        }
-    }, [])
-
-    const verifyUsername = useCallback(async (username: string): Promise<boolean> => {
-        setIsLoading(true)
-        try {
-            const response = await api.post(`/auth/verify?username=${username}`)
-            return response.data.success
-        } catch (error) {
-            console.error('Erro ao verificar username: ', error)
-            return false
-        } finally {
-            setIsLoading(false)
-        }
-    }, [])
-
-    const submitRegistration = useCallback(async () => {
-        setIsLoading(true)
-        try {
-            const response = await api.post(`/auth/register`, data)
-
-            if (response.status === 201) {
-                console.log('Registro realizado com sucesso!')
-            } else {
-                throw new Error('Falha no registro geral')
-            }
-        } catch (error) {
-            console.error('Erro ao submeter o registro: ', error);
-            throw new Error('Erro ao submiter o registro')
-        } finally {
-            setIsLoading(false)
-        }
-    }, [data])
-
-    const contextValue = useMemo(() => ({
-        data,
-        updateSignUpData,
-        verifyEmail,
-        verifyUsername,
-        submitRegistration,
-        isLoading
-    }), [data, updateSignUpData, verifyEmail, verifyUsername, submitRegistration, isLoading])
+    const resetData = () => setData({})
 
     return (
-        <SignUpContext.Provider value={contextValue}>
+        <SignUpContext.Provider value={{ data, updateData, resetData }}>
             {children}
         </SignUpContext.Provider>
     )
+}
+
+export const useSignUpContext = () => useContext(SignUpContext)
+
+export const RequireStep = ({ step }: { step: 'profile' | 'styles' }) => {
+    const { data } = useSignUpContext()
+
+    if (step === 'profile') {
+        if (!data.email || !data.password) {
+            return <Navigate to='/register' replace />
+        }
+    }
+
+    if (step === 'styles') {
+        if (!data.username) {
+            return <Navigate to='/createProfile' replace />
+        }
+    }
+
+    return <Outlet />
 }

@@ -13,8 +13,8 @@ import Notifications from '../pages/Notifications'
 import Settings from '../pages/Settings'
 import ChatMenu from '../pages/ChatMenu'
 import Chat from '../pages/Chat'
-import Saved from "../pages/Saved";
-
+import Saved from '../pages/Saved'
+import { RequireStep } from '../contexts/SignUpContext'
 
 export const Router = () => {
     return (
@@ -23,13 +23,19 @@ export const Router = () => {
                 <Route index element={ <Welcome /> } />
                 <Route path='login' element={ <Login /> } />
                 <Route path='register' element={ <SignUp /> } />
-                <Route path='createProfile' element={ <CreateProfile /> } />
-                <Route path='selectStyles' element={ <SelectStyles /> } />
+
+                <Route element={ <RequireStep step='profile' /> }>
+                    <Route path='createProfile' element={ <CreateProfile /> } />
+                </Route>
+
+                <Route element={ <RequireStep step='styles' /> }>
+                    <Route path='selectStyles' element={ <SelectStyles /> } />
+                </Route>
 
                 <Route path='user/:username' element={
-                        <RouteProtection>
-                            <Menu />
-                        </RouteProtection>
+                    <RouteProtection>
+                        <Menu />
+                    </RouteProtection>
                 }>
                     <Route path='feed' element={ <Feed /> }>
                         <Route path='foryou' element={ <></> } />
@@ -53,8 +59,7 @@ export const Router = () => {
                             
                     <Route path='settings' element={ <Settings /> } />
 
-                    <Route path="saved" element={ <Saved /> } />
-
+                    <Route path='saved' element={ <Saved /> } />
                 </Route>
             </Routes>
         </BrowserRouter>

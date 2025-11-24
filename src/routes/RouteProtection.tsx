@@ -8,6 +8,6 @@ export const RouteProtection = ({ children }: Props) => {
     if (isAuthenticated) {
         return children
     } else {
-        return <Navigate to='/login' />
+        return <Navigate to='/login' replace />
     }
 }

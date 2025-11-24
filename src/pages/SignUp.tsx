@@ -4,41 +4,50 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuth } from '../contexts/AuthContext'
-import { useSignUp } from '../contexts/SignUpContext'
-import { useState } from 'react'
+import { useSignUpContext } from '../contexts/SignUpContext'
+import { useError } from '../contexts/ErrorContext'
+import { authService } from '../services/api'
 
 const schema = z.object({
     email: z.string().email({ message: 'Informe um e-mail válido!' }),
     password: z.string().min(6, { message: 'A senha deve conter pelo menos 6 caracteres!' }),
     confirmPassword: z.string().min(6, { message: 'A senha deve ser a mesma digitada anteriormente!' })
+}).refine(data => data.password === data.confirmPassword, {
+    message: 'As senhas não coindidem',
+    path: ['confirmPassword']
 })
 
 type FormValues = z.infer<typeof schema>
 
 const SignUp = () => {
-    const [emailAvailable, setEmailAvailable] = useState('')
-
-    const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
+    const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm<FormValues>({
         resolver: zodResolver(schema)
     })
 
     const navigation = useNavigate()
-    
     const { isAuthenticated, user } = useAuth()
-    
+    const { updateData } = useSignUpContext()
+    const { triggerError } = useError()
 
     if (isAuthenticated) {
         navigation(`/user/${user?.username}/feed/foryou`)
     }
 
-    // const { data, updateSignUpData, verifyEmail, isLoading } = useSignUp()
+    const handleSignUp = async (data: FormValues) => {
+        try {
+            const isAvailable = await authService.verifyEmail(data.email);
 
-    const handleSignUp = (data: FormValues) => {
+            if (!isAvailable) {
+                triggerError('Este e-mail já está em uso!')
+                setError('email', { type: 'manual', message: 'Este e-mail já está em uso' })
+                return
+            }
 
-        if (data.password === data.confirmPassword) {
-            /* navigation('/createProfile') */
-        } else {
-            console.log(errors?.confirmPassword)
+            updateData({ email: data.email, password: data.password })
+            navigation('/createProfile')
+        } catch (error) {
+            console.error('Erro ao verificar email: ', error)
+            triggerError('Erro ao verificar e-mail!')
         }
     }
 
@@ -87,8 +96,11 @@ const SignUp = () => {
                     
                     <button 
                         type='submit'
+                        disabled={isSubmitting}
                         className='formButton w-5/6 py-3 px-2 mb-3 transtion-all duration-200 md:w-1/2'
-                    >Cadastrar</button>
+                    >
+                        { isSubmitting ? 'Verificando' : 'Cadastrar' }
+                    </button>
 
                     <p>
                         Já tem uma conta?
