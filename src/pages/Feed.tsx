@@ -3,59 +3,109 @@ import { NavLink, Link, useParams, useLocation } from 'react-router-dom'
 import { Post } from '../components/Post'
 import { CommentsModal } from '../components/CommentsModal'
 import { type Post as TypePost } from '../types/Post'
-import { api } from '../services/api'
+import { postService } from '../services/api'
+import { useError } from '../contexts/ErrorContext'
+import { useAuth } from '../contexts/AuthContext'
 
 const Feed = () => {
     const { username } = useParams()
     const location = useLocation()
+    const { user } = useAuth()
 
-    const [posts, setPosts] = useState<TypePost[] | null>(null)
+    const [posts, setPosts] = useState<TypePost[]>([])
     const [isLoading, setIsLoading] = useState(true)
 
-    const [selectedComments, setSelectedComments] = useState([])
-    const [addCommentFn, setAddCommentFn] = useState(() => () => {})
+    const [activeCommentPostId, setActiveCommentPostId] = useState<string | null>(null)
+    const { triggerError } = useError()
 
-    useEffect(() => {
-        const fetchPosts = async () => {
-            setIsLoading(true)
-            setPosts([])
-            let endpoint = '';
+    const fetchPosts = async () => {
+        setIsLoading(true)
+        let type: 'feed' | 'following' = 'feed'
 
-            if (location.pathname === `/user/${username}/feed/foryou`) {
-                endpoint = '/posts?type=feed'
-            } else if (location.pathname === `/user/${username}/feed/following`) {
-                endpoint = '/posts?type=following'
-            } else {
-                setIsLoading(false)
-                return
-            }
-
-            try {
-                const response = await api.get(endpoint)
-                const data = response.data
-
-                if (data && data.posts) {
-                    setPosts(data.posts)
-                } else {
-                    setPosts([])
-                }
-            } catch (error) {
-                setPosts([])
-            } finally {
-                setIsLoading(false)
-            }
+        if (location.pathname.includes('/following')) {
+            type = 'following'
         }
 
+        try {
+            const data = await postService.getPosts(type)
+            setPosts(data || [])
+        } catch (error) {
+            console.error('Erro ao carregar o feed: ', error)
+            setPosts([])
+            triggerError('Erro ao carregar o feed!')
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    useEffect(() => {
         fetchPosts()
     }, [location.pathname])
 
-    const [openComments, setOpenComments] = useState(false)
+    /* Handlers de interações */
+    const handleLike = async (postId: string) => {
+        setPosts(currentPosts => 
+            currentPosts.map(post => {
+                if (post.id === postId) {
+                    const newLikedState = !post.isLiked
 
-    
+                    return {
+                        ...post,
+                        isLiked: newLikedState,
+                        likeCount: newLikedState ? post.likeCount + 1 : post.likeCount - 1
+                    }
+                }
 
-    const toggleActivate = (route: string) => `/user/${username}/feed/${route}` === location.pathname
+                return post
+            })
+        )
 
-    
+        try {
+            await postService.toggleLike(postId)
+        } catch (error) {
+            console.error('Erro ao curtir: ', error)
+            triggerError('Erro ao curtir!')
+            fetchPosts()
+        }
+    }
+
+    const handleSave = async (postId: string) => {
+        setPosts(currentPosts => 
+            currentPosts.map(post => {
+                if (post.id === postId) {
+                    const newSavedState = !post.isSaved
+                    return {
+                        ...post,
+                        isSaved: newSavedState,
+                        savedCount: newSavedState ? post.savedCount + 1 : post.savedCount - 1
+                    };
+                }
+                return post
+            })
+        )
+
+        try {
+            await postService.toggleSave(postId)
+        } catch (error) {
+            console.error('Erro ao salvar: ', error)
+            triggerError('Erro ao salvar!')
+        }
+    }
+
+    const handleDelete = async (postId: string) => {
+        if (!confirm('Tem certeza que deseja deletar o post?')) return
+
+        try {
+            await postService.delete(postId);
+            
+            setPosts(currentPosts => currentPosts.filter(p => p.id !== postId));
+        } catch (error) {
+            console.error('Erro ao deletar: ', error)
+            triggerError('Não foi possível deletar o post!')
+        }
+    }
+
+    const toggleActivate = (route: string) => location.pathname.includes(route)
 
     return (
         <div className="h-13/14 w-full md:h-full md:w-11/12 md:flex md:flex-col md:items-center">
@@ -126,40 +176,39 @@ const Feed = () => {
                 </section>
             </header>
 
-            <main className="w-full flex flex-col gap-28 h-5/6 overflow-auto md:w-5/8 md:px-8 md:pt-5 md:bg-inknity-background md:rounded-md md:h-full">
+            <main className="w-full flex flex-col gap-32 h-5/6 overflow-auto md:w-5/8 md:px-8 md:pt-5 md:bg-inknity-background md:rounded-md md:h-full">
                 {
                     isLoading && (
-                        <p className='text-center'>Carregando posts...</p>
+                        <p className='text-center mt-10'>Carregando posts...</p>
                     )
                 }
 
                 {
-                    !isLoading && posts.length > 0 && (
-                        posts.map(post => (
-                            <Post 
-                                key={post.id}
-                                onOpenComments={() => setOpenComments(true)}
-                                data={post}
-                            />
-                        ))
+                    !isLoading && posts.length === 0 && (
+                        <p className='text-center mt-10 opacity-50'>Nenhum post encontrado.</p>
                     )
                 }
                 
-                {/* <div className="flex justify-center items-center w-full h-1/6 ">
-                    <button className="bg-inknity-purple py-3 px-10 rounded font-bold hover:cursor-pointer hover:bg-inknity-purple/80 hover:text-inknity-white/80 hover:rounded-md transition-all duration-300 shadow-[0_0_8px] shadow-inknity-purple">
-                        Ver mais
-                    </button>
-                </div> */}
+                {
+                    !isLoading && posts.map(post => (
+                        <Post 
+                            key={post.id}
+                            data={post}
+                            onLike={() => handleLike(post.id)}
+                            onSave={() => handleSave(post.id)}
+                            onDelete={() => handleDelete(post.id)}
+                            onOpenComments={() => setActiveCommentPostId(post.id)}
+                            isOwner={post.authorId === user.id}
+                        />
+                    ))
+                }
+
+                <CommentsModal 
+                    open={!!activeCommentPostId}
+                    onClose={() => setActiveCommentPostId(null)}
+                    postId={activeCommentPostId}
+                />
             </main>
-
-            <CommentsModal
-                open={openComments}
-                onClose={() => setOpenComments(false)}
-                comments={selectedComments}
-                onAddComment={(text) => addCommentFn(text)}
-                
-            />
-
         </div>
     )
 }

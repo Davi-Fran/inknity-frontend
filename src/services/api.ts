@@ -1,4 +1,5 @@
 import axios from 'axios'
+import type { Post } from '../types/Post';
 
 const API_URL = 'http://localhost:3000';
 
@@ -34,4 +35,38 @@ export const setAuthToken = (token: string | null) => {
     } else {
         delete api.defaults.headers.common['Authorization']
     }
+}
+
+export const postService = {
+    getPosts: async (type: 'feed' | 'following' = 'feed') => {
+        const response = await api.get<{ posts: Post[] }>(`/posts/?type=${type}`)
+        return response.data.posts
+    },
+
+    create: async (formData: FormData) => {
+        return await api.post('/posts', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        })
+    },
+
+    delete: async (postId: string) => {
+        return await api.delete(`/posts/${postId}`)
+    },
+
+    toggleLike: async (postId: string) => {
+        return await api.post(`/posts/${postId}/like`)
+    },
+
+    toggleSave: async (postId: string) => {
+        return await api.post(`/users/me/save/${postId}`)
+    },
+
+    getComments: async (postId: string) => {
+        const response = await api.get(`/posts/${postId}/comments`)
+        return response.data.comments
+    },
+
+    addComment: async (postId: string, text: string) => {
+        return await api.post(`/posts/${postId}/comment`, { text })
+    },
 }
