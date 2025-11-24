@@ -1,141 +1,101 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Notification } from '../components/Notification'
+import { useError } from '../contexts/ErrorContext'
+import { api } from '../services/api'
+
+export interface NotificationData {
+  id: string,
+  type: 'new_follower' | 'post_like' | 'new_order' | 'new_comment' | 'new_message',
+  createdAt: string,
+  read: boolean
+}
 
 const Notifications = () => {
   const { username } = useParams()
+  const { triggerError } = useError()
 
-  const [notifications, setNotifications] = useState<
-    { id: string; type: string; message: string; time: string; read: boolean }[]
-  >([])
+  const [notifications, setNotifications] = useState<NotificationData[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const [selectionMode, setSelectionMode] = useState(false)
-  const [selected, setSelected] = useState<number[]>([])
-
-  // carregar dados fake
   useEffect(() => {
-    setNotifications([
-      { id: '3', type: 'like', message: 'gaby curtiu sua publicação!', time: '2m atrás', read: false },
-      { id: '2', type: 'comment', message: 'luna comentou: “amei seu estilo!! 😍”', time: '10m atrás', read: true },
-      { id: '1', type: 'follow', message: 'kai começou a te seguir!', time: '1h atrás', read: true },
-    ])
+    const fetchAndMarkAll = async () => {
+      try {
+        const response = await api.get('/notifications')
+        const data = response.data.notifications
+        setNotifications(data)
+
+        if (data.length > 0) {
+          api.put('/notifications/read').catch(err => console.error('Falha ao marcar como lido: ', err))
+        }
+      } catch (error) {
+        console.error('Erro ao buscar notificações: ', error)
+        triggerError('Não foi possível carregar as notificações!')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchAndMarkAll()
   }, [])
 
-  // entrar no modo seleção
-  const startSelection = (id: number) => {
-    setSelectionMode(true)
-    setSelected([id])
-  }
+  const handleDeleteAll = async () => {
+    if (notifications.length === 0) return
 
-  // selecionar/deselecionar
-  const toggleSelection = (id: number) => {
-    setSelected(prev =>
-      prev.includes(id)
-        ? prev.filter(n => n !== id)
-        : [...prev, id]
-    )
-  }
-
-  // deletar TODAS notificações lidas
-  const deleteReadNotifications = () => {
-    const confirmDelete = window.confirm(
-      "Tem certeza? TODAS as notificações lidas serão apagadas."
-    )
-
+    const confirmDelete = window.confirm('Tem certeza que deseja apagar as notificações?')
     if (!confirmDelete) return
 
-    setNotifications(prev => prev.filter(n => !n.read))
-    setSelected([])
-    setSelectionMode(false)
+    try {
+      await api.delete('/notifications/delete')
+      setNotifications([])
+    } catch (error) {
+      console.error(error)
+      triggerError('Erro ao deletar notificações')
+    }
   }
+
+  if (loading) return <div className='p-10 text-white text-center'>Carregando...</div>
 
   return (
     <div className='flex flex-col w-full h-13/14 bg-inknity-background-2 rounded-md shadow-md md:w-11/12 md:h-full'>
-      
+
       <header className='flex items-center justify-between w-full h-1/10 px-5 bg-inknity-background'>
-        
-        {!selectionMode ? (
-          <>
-            <Link to={`/user/${username}/feed/foryou`} className='text-inknity-yellow hover:text-inknity-purple transition'>
-              ←
-            </Link>
+        <Link to={`/user/${username}/feed/foryou`} className='text-inknity-yellow hover:text-inknity-purple transition'>
+          ←
+        </Link>
 
-            <h2 className='font-bold text-lg text-inknity-white'>Notificações</h2>
+        <h2 className='font-bold text-lg text-inknity-white'>Notificações</h2>
 
+        {/* Botão de lixeira sempre vísivel se tiver notificações */}
+        {
+          notifications.length > 0 ? (
             <button
-              onClick={deleteReadNotifications}
-              className='text-red-400 hover:text-red-300 transition text-xl'
-              title="Excluir todas as notificações lidas"
+              onClick={handleDeleteAll}
+              className='text-red-400 hover:text-red-300 transition text-xl cursor-pointer'
+              title='Excluir todas as notificações'
             >
               🗑️
             </button>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={() => { setSelectionMode(false); setSelected([]) }}
-              className='text-inknity-yellow hover:text-inknity-purple transition'
-            >
-              Cancelar
-            </button>
-
-            <h2 className='font-bold text-lg text-inknity-white'>
-              {selected.length} selecionada{selected.length > 1 ? 's' : ''}
-            </h2>
-
-            <button
-              onClick={deleteReadNotifications}
-              className='text-red-400 hover:text-red-300 transition text-xl'
-            >
-              🗑️
-            </button>
-          </>
-        )}
-
+          ) : (
+            <div className='size-6'></div>
+          )
+        }
       </header>
 
       <main className='flex-1 w-full overflow-y-auto px-4 py-3 space-y-3'>
-        {notifications.length > 0 ? (
-          notifications.map((notif) => {
-            const isSelected = selected.includes(notif.id)
-
-            return (
-              <div
-                key={notif.id}
-                className={`
-                  transition rounded-lg
-                  ${isSelected ? 'bg-inknity-purple/30 border border-inknity-purple' : ''}
-                `}
-                onClick={() => {
-                  if (selectionMode) toggleSelection(notif.id)
-                }}
-                onContextMenu={(e) => {
-                  e.preventDefault()
-                  if (!selectionMode) startSelection(notif.id)
-                }}
-                onMouseDown={(e) => {
-                  let timer = setTimeout(() => {
-                    if (!selectionMode) startSelection(notif.id)
-                  }, 600)
-
-                  const clear = () => clearTimeout(timer)
-                  e.target.addEventListener("mouseup", clear, { once: true })
-                  e.target.addEventListener("mouseleave", clear, { once: true })
-                }}
-              >
-                <Notification
-                  data={notif}
-                  selected={isSelected}
-                  onSelect={() => toggleSelection(notif.id)}
-                />
+        {
+          notifications.length > 0 ? (
+            notifications.map((notif) => (
+              <div key={notif.id} className='transition rounded-lg'>
+                <Notification data={notif} />
               </div>
-            )
-          })
-        ) : (
-          <div className='flex items-center justify-center h-full text-inknity-white/60 italic'>
-            Nenhuma notificação 💭
-          </div>
-        )}
+            ))
+          ) : (
+            <div className='flex items-center justify-center h-full text-inknity-white/60 italic'>
+              Nenhuma notificação 💭
+            </div>
+          )
+        }
       </main>
     </div>
   )
