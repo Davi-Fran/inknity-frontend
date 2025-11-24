@@ -107,7 +107,10 @@ export const CommentsModal = ({ open, onClose, postId }: CommentModalProps) => {
                     {
                         comments.map((c, i) => (
                             <div key={i} className='flex gap-3'>
-                                <div className='size-10 rounded-full bg-gray-600 flex-shrink-0'></div>
+                                <div
+                                    className='size-10 flex-shrink-0 bg-center bg-cover rounded-full border border-inknity-white/10'
+                                    style={{ backgroundImage: `url('${c.avatarUrl || ''}')` }}
+                                ></div>
                                 <div>
                                     <p className='font-bold text-sm'>{c.username}</p>
                                     <p className='text-sm text-inknity-white/80'>{c.text}</p>
