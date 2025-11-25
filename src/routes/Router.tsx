@@ -45,11 +45,9 @@ export const Router = () => {
 
                     <Route path='search' element={ <Search /> } />
 
-                    <Route path='profile' element={ <Profile /> }>
-                        <Route path='posts' element={ <></> } />
-                                
-                        <Route path='comissions' element={ <></> } />
-                    </Route>
+                    <Route path='profile' element={ <Profile /> } />
+                    
+                    <Route path='profile/:targetUsername' element={ <Profile /> } />
 
                     <Route path='chat' element={<ChatMenu />} />
 

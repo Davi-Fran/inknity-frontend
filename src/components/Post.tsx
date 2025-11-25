@@ -74,7 +74,7 @@ export const Post = ({ data, onLike, onSave, onDelete, onOpenComments, isOwner }
 
                     <div>
                         <Link 
-                            to={`/user/${username}/profile/posts`}
+                            to={`/user/${username}/profile/${profile.user?.username}`}
                             className='leading-tight text-lg font-bold hover:text-inknity-purple hover:cursor-pointer'
                         >
                             {profile.user.displayName || 'Usuário'}

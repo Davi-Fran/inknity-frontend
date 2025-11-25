@@ -7,7 +7,6 @@ export const CreateCommissionModal = ({ open, onClose, onSubmit }) => {
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [price, setPrice] = useState("")
-  const [deliveryTime, setDeliveryTime] = useState("")
 
   useEffect(() => {
     const keyHandler = (e) => e.key === "Escape" && onClose()
@@ -35,14 +34,12 @@ export const CreateCommissionModal = ({ open, onClose, onSubmit }) => {
       name,
       description,
       price,
-      imageFile,
-      deliveryTime
+      imageFile
     })
 
     setName("")
     setDescription("")
     setPrice("")
-    setDeliveryTime("")
     setImagePreview(null)
     setImageFile(null)
     onClose()
@@ -114,14 +111,6 @@ export const CreateCommissionModal = ({ open, onClose, onSubmit }) => {
           placeholder="Preço Base (R$)"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
-        />
-
-        <input
-          type="text"
-          className={inputStyle}
-          placeholder="Prazo de entrega (ex: 7 dias)"
-          value={deliveryTime}
-          onChange={(e) => setDeliveryTime(e.target.value)}
         />
 
         <button
