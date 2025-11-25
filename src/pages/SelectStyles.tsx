@@ -6,7 +6,7 @@ import { type TagType } from '../types/Tag'
 import { useAuth } from '../contexts/AuthContext'
 import { useSignUpContext } from '../contexts/SignUpContext'
 import { useError } from '../contexts/ErrorContext'
-import { authService } from '../services/api'
+import { api, authService } from '../services/api'
 
 const SelectStyles = () => {
     const [addStyle, setAddStyle] = useState('')
@@ -73,8 +73,14 @@ const SelectStyles = () => {
 
             await authService.register(finalPayload)
             await login(finalPayload.email, finalPayload.password)
-            navigation('/login')
 
+            if (signUpData.imageFile) {
+                const avatarBody = new FormData()
+                avatarBody.append('avatar', signUpData.imageFile)
+                await api.post('/users/me/avatar', avatarBody);
+            }
+
+            navigation('/login')
             resetData()
         } catch (error) {
             console.error('Erro ao registrar o usuário: ', error);

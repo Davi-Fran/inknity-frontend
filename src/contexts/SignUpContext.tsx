@@ -9,6 +9,7 @@ interface SignUpData {
     pronouns?: string;
     bio?: string;
     tags?: string[];
+    imageFile?: File | null;
 }
 
 interface SignUpContextType {
