@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 import { useError } from "../contexts/ErrorContext";
 
 // Modais e Assets
-import { CommentsModal } from "../components/CommentsModal";
 import { CreateCommissionModal } from "../components/CreateCommissionModal";
 import { CreatePostModal } from "../components/CreatePostModal";
 import standard from "../assets/img/standard.svg";
@@ -18,12 +17,8 @@ export type PostItem = {
   type: "post";
   authorId: string;
   title: string;
-  body?: string;
+  caption?: string;
   imageUrl?: string | null;
-  likeCount: number;
-  isLiked?: boolean;
-  isSaved?: boolean;
-  commentCount: number;
   createdAt: Timestamp;
 };
 
@@ -35,7 +30,7 @@ export type CommissionItem = {
   description: string;
   exampleImageUrl?: string | null;
   price: number;
-  status: 'open' | 'closed'; 
+  status: 'open' | 'closed';
   createdAt: Timestamp;
   currency?: string
 };
@@ -74,11 +69,7 @@ const Profile: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<"posts" | "commissions">("posts");
 
   // Payloads para Modais
-  const [editingPost, setEditingPost] = useState<PostItem | null>(null);
   const [zoomPost, setZoomPost] = useState<PostItem | null>(null);
-  const [selectedComments, setSelectedComments] = useState<any[]>([]);
-  const [currentCommentsPostId, setCurrentCommentsPostId] = useState<string | null>(null);
-
 
   useEffect(() => {
     const fetchProfileAndPosts = async () => {
@@ -91,43 +82,36 @@ const Profile: React.FC = () => {
 
         if (!userData) throw new Error("Usuário não encontrado");
 
-
-        const profileInfo = userData.user || userData;
+        const profileInfo = userData.user;
         setProfileData(profileInfo);
         setIsFollowing(profileInfo.isFollowing || false);
 
-        // Mapear POSTS
-        const rawPosts = userData.posts || [];
+        let rawPosts = userData.posts;
         const mappedPosts: PostItem[] = rawPosts.map((p: any) => ({
-            id: p.id,
-            type: "post",
-            authorId: p.authorId,
-            title: p.title || "Sem título",
-            caption: p.caption,
-            imageUrl: p.imageUrl || null,
-            likeCount: p.likeCount || 0,
-            isLiked: p.isLiked || false,
-            isSaved: p.isSaved || false,
-            commentCount: p.commentCount || 0,
-            createdAt: p.createdAt
+          id: p.id,
+          type: "post",
+          authorId: p.authorId,
+          title: p.title || "Post",
+          caption: p.caption,
+          imageUrl: p.imageUrl || null,
+          createdAt: p.createdAt
         }));
-
 
         // Mapear COMISSÕES
-        const rawCommissions = userData.commissions || [];
-        const mappedCommissions: CommissionItem[] = rawCommissions.map((c: any) => ({
-            id: c.id,
-            type: "commission",
-            artistId: c.artistId,
-            title: c.title || "Comissão",
-            description: c.description,
-            exampleImageUrl: c.exampleImageUrl || null,
-            price: Number(c.price),
-            status: c.status === 'closed' ? 'closed' : 'open',
-            createdAt: c.createdAt
+        const rawCommissions = userData.commissions;
+        const mappedCommissions = rawCommissions.map((c: any) => ({
+          id: c.id,
+          type: "commission",
+          artistId: c.artistId,
+          title: c.title || "Comissão",
+          description: c.description,
+          exampleImageUrl: c.exampleImageUrl || null,
+          price: Number(c.price),
+          status: c.status === 'closed' ? 'closed' : 'open',
+          createdAt: c.createdAt
         }));
 
-        setPosts([...mappedPosts, ...mappedCommissions]);
+        setPosts([ ...mappedPosts, ...mappedCommissions]);
 
       } catch (error) {
         console.error("Erro ao carregar perfil:", error);
@@ -154,9 +138,9 @@ const Profile: React.FC = () => {
     if (!profileData) return;
     try {
       // Rota: POST /chats/init
-      const res = await api.post('/chats/init', { targetUserId: profileData.id });
+      const res = await api.post(`/chats/init?targetUserId=${profileData.id}`);
       // Redireciona para a rota de chat com o ID retornado
-      navigate(`/user/${currentUser?.username}/chat/${res.data.chatId}`);
+      navigate(`/user/${currentUser?.username}/chat/${res.data.chatData.chatId}`);
     } catch (error) {
       triggerError("Erro ao iniciar chat.");
     }
@@ -198,11 +182,11 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handlePublishPost = async (data: { title: string; body?: string; imageFile?: File | null }) => {
+  const handlePublishPost = async (data: { caption: string; tags?: string[]; imageFile?: File | null }) => {
     try {
       const formData = new FormData();
-      formData.append("title", data.title);
-      formData.append("caption", data.body || "");
+      formData.append("caption", data.caption);
+      formData.append("tags", JSON.stringify(data.tags));
       if (data.imageFile) formData.append("image", data.imageFile);
 
       await api.post("/posts", formData, { headers: { "Content-Type": "multipart/form-data" } });
@@ -213,11 +197,11 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleSubmitCommission = async (data: { title: string; body?: string; price?: number; imageFile?: File | null }) => {
+  const handleSubmitCommission = async (data: { name: string; description?: string; price?: number; imageFile?: File | null }) => {
     try {
       const formData = new FormData();
-      formData.append("title", data.title);
-      formData.append("description", data.body || "");
+      formData.append("title", data.name);
+      formData.append("description", data.description || "");
       formData.append("price", String(data.price || 0));
       if (data.imageFile) formData.append("image", data.imageFile);
 
@@ -228,14 +212,6 @@ const Profile: React.FC = () => {
     } catch (error) {
       triggerError("Erro ao criar comissão.");
     }
-  };
-
-  const toggleLike = async (id: string) => {
-    setPosts(prev => prev.map(p => p.id === id ? { ...p, liked: !p.liked, likes: p.liked ? p.likes - 1 : p.likes + 1 } : p));
-
-    try {
-      await api.post(`/posts/${id}/like`);
-    } catch (error) { /* Silent fail */ }
   };
 
   const deleteItem = async (id: string, type: 'post' | 'commission') => {
@@ -249,31 +225,6 @@ const Profile: React.FC = () => {
     }
   }
 
-  const loadComments = async (post: PostItem) => {
-    try {
-      const res = await api.get(`/posts/${post.id}/comments`);
-      setSelectedComments(res.data);
-      setCurrentCommentsPostId(post.id);
-      setModal("comments");
-    } catch (error) {
-      triggerError("Erro ao carregar comentários.");
-    }
-  }
-
-  const handleAddComment = async (text: string) => {
-    if (!currentCommentsPostId) return;
-    try {
-      // Rota: POST /posts/:id/comment
-      await api.post(`/posts/${currentCommentsPostId}/comment`, { text });
-      // Recarrega
-      loadComments({ id: currentCommentsPostId } as PostItem);
-      // Incrementa contador localmente
-      setPosts(prev => prev.map(p => p.id === currentCommentsPostId ? { ...p, commentCount: p.commentCount + 1 } : p));
-    } catch (error) {
-      triggerError("Erro ao enviar comentário.");
-    }
-  }
-
   const ContentCardInline: React.FC<{ item: ItemUnion }> = ({ item }) => {
     const [menuOpen, setMenuOpen] = useState(false);
 
@@ -282,102 +233,66 @@ const Profile: React.FC = () => {
 
     // Classes Tailwind para mudar o visual se estiver fechada
     const cardClasses = `p-4 mb-4 rounded-xl shadow-lg relative transition-colors ${isCommissionClosed
-        ? 'bg-[#1e172a] opacity-60'
-        : 'bg-inknity-background-2'
+      ? 'bg-[#1e172a] opacity-60'
+      : 'bg-inknity-background-2'
       }`;
-
 
     return (
       <div className={cardClasses}>
         {/* Menu só para o dono */}
-        {isOwner && (
-          <div className="absolute top-3 right-3 flex items-center gap-2 z-20">
-            <div className="relative">
-              <button onClick={() => setMenuOpen(!menuOpen)} className="px-2 py-1 rounded hover:bg-[#34264a]">⋮</button>
-              {
-                menuOpen && item.type === "post" && (
-                  <div className="absolute right-0 top-9 bg-[#2a2040] border border-[#3b2d52] rounded-lg shadow-lg z-50 w-36">
-                    <button className="w-full block px-3 py-2 text-left text-red-400 hover:bg-red-900/20"
-                      onClick={() => deleteItem(item.id, item.type)}>
-                      Apagar
-                    </button>
-                  </div>
-                )
-              }
-
-              {
-                menuOpen && item.type === "commission" && (
-                  <div className="absolute right-0 top-9 bg-[#2a2040] border border-[#3b2d52] rounded-lg shadow-lg z-50 w-36">
-                    <button
-                      className="w-full block px-3 py-2 text-left hover:bg-inknity-purple/20 overflow-hidden z-30"
-                      // Ação de Abrir/Fechar
-                      onClick={() => {
-                        toggleCommissionStatus(item.id, item.status);
-                        setMenuOpen(false);
-                      }}>
-                      {item.status === 'open' ? 'Fechar' : 'Abrir'}
-                    </button>
-                    <button className="w-full block px-3 py-2 text-left text-red-400 hover:bg-red-900/20"
-                      onClick={() => deleteItem(item.id, item.type)}>
-                      Apagar
-                    </button>
-                  </div>
-                )
-              }
+        {
+          isOwner && (
+            <div className="absolute top-3 right-3 flex items-center gap-2 z-20">
+              <div className="relative">
+                <button onClick={() => setMenuOpen(!menuOpen)} className="px-2 py-1 rounded hover:bg-[#34264a]">⋮</button>
+                {
+                  menuOpen && (
+                    <div className="absolute right-0 top-9 bg-[#2a2040] border border-[#3b2d52] rounded-lg shadow-lg z-50 w-36">
+                      <button className="w-full block px-3 py-2 text-left text-red-400 hover:bg-red-900/20"
+                        onClick={() => deleteItem(item.id, item.type)}>
+                        Apagar
+                      </button>
+                    </div>
+                  )
+                }
+              </div>
             </div>
-          </div>
-        )}
+          )
+        }
 
         {/* **MARCAÇÃO DE STATUS** */}
-        {item.type === 'commission' && isCommissionClosed && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-xl z-10">
-            <span className="text-xl font-bold text-red-400 border border-red-400 p-2 rounded-lg">FECHADA</span>
-          </div>
-        )}
+        {
+          item.type === 'commission' && isCommissionClosed && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-xl z-10">
+              <span className="text-xl font-bold text-red-400 border border-red-400 p-2 rounded-lg">FECHADA</span>
+            </div>
+          )
+        }
 
         <div className="flex items-start">
           {/* Imagem com Zoom */}
           <div
-            className={`w-1/3 h-32 mr-4 flex items-center justify-center bg-inknity-banner/50 rounded-lg cursor-pointer overflow-hidden ${isCommissionClosed ? 'grayscale' : ''}`}
-            onClick={() => { setZoomPost(item); setModal("zoom"); }}>
-            <img src={item.imageUrl || standard} alt="Thumb" className="w-full h-full object-cover" />
+            className={`w-1/3 h-32 mr-4 flex items-center justify-center bg-inknity-banner/50 rounded-lg overflow-hidden ${isCommissionClosed ? 'grayscale' : ''}`}>
+            <img src={item.exampleImageUrl || item.imageUrl || standard} alt="Thumb" className="w-full h-full object-cover" />
           </div>
 
           {/* Texto e Ações */}
           <div className="w-2/3 flex flex-col h-32 justify-between">
             <div>
               <p className="text-white text-base font-medium truncate">{item.title}</p>
-              <p className="text-sm text-gray-400 mt-1 line-clamp-2">{item.body}</p>
+              <p className="text-sm text-gray-400 mt-1 line-clamp-2">{item.description || item.caption}</p>
               {/* Como CommissionItem tem status e price */}
-              {item.type === "commission" && (
-                <div className="flex items-center mt-1">
-                  <p className="text-inknity-yellow font-bold text-sm">R$ {item.price}</p>
-                  <span className={`ml-3 px-2 py-0.5 text-xs rounded-full font-semibold ${item.status === 'open' ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400'}`}>
-                    {item.status === 'open' ? 'Aberta' : 'Fechada'}
-                  </span>
-                </div>
-              )}
+              {
+                item.type === "commission" && (
+                  <div className="flex items-center mt-1">
+                    <p className="text-inknity-yellow font-bold text-sm">R$ {item.price}</p>
+                    <span className={`ml-3 px-2 py-0.5 text-xs rounded-full font-semibold ${item.status === 'open' ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400'}`}>
+                      {item.status === 'open' ? 'Aberta' : 'Fechada'}
+                    </span>
+                  </div>
+                )
+              }
             </div>
-
-            {/* Ações de Post (Likes/Comments) */}
-            {item.type === "post" && (
-              <div className="flex justify-end items-center text-gray-400 gap-4">
-                <div className="flex items-center gap-1.5 cursor-pointer" onClick={() => toggleLike(item.id)}>
-                  {/* Ícone Like */}
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={item.isLiked ? "currentColor" : "none"} stroke="currentColor" strokeWidth={1.5} className={`size-6 ${item.isLiked ? "text-red-500" : "hover:text-inknity-purple"}`}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733C11.285 4.876 9.623 3.75 7.688 3.75 5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                  </svg>
-                  <span>{item.likes}</span>
-                </div>
-                <div className="flex items-center gap-1.5 cursor-pointer" onClick={() => loadComments(item)}>
-                  {/* Ícone Comments */}
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 hover:text-inknity-purple">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
-                  </svg>
-                  <span>{item.commentCount}</span>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -494,7 +409,6 @@ const Profile: React.FC = () => {
       {/* Modais */}
       <CreatePostModal open={modal === "post"} onClose={() => setModal(null)} onSubmit={handlePublishPost} />
       <CreateCommissionModal open={modal === "commission"} onClose={() => setModal(null)} onSubmit={handleSubmitCommission} />
-      {/* <CommentsModal open={modal === "comments"} comments={selectedComments} onClose={() => setModal(null)} onSubmit={handleAddComment} /> */}
 
       {modal === "zoom" && zoomPost && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setModal(null)}>
