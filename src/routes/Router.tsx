@@ -14,6 +14,9 @@ import Settings from '../pages/Settings'
 import ChatMenu from '../pages/ChatMenu'
 import Chat from '../pages/Chat'
 import Saved from '../pages/Saved'
+import Content from '../pages/Content'
+import PasswordSetting from '../pages/PasswordSettings'
+import OrderSettings from '../pages/OrderSettings'
 import { RequireStep } from '../contexts/SignUpContext'
 
 export const Router = () => {
@@ -55,9 +58,14 @@ export const Router = () => {
 
                     <Route path='notifications' element={ <Notifications /> } />
                             
-                    <Route path='settings' element={ <Settings /> } />
-
-                    <Route path='saved' element={ <Saved /> } />
+                    
+                    <Route path='settings' element={<Settings />}>
+                        <Route index element={<Saved />} />
+                        <Route path="saved" element={<Saved />} />
+                        <Route path="content" element={<Content />} />
+                        <Route path="password" element={<PasswordSetting />} />
+                        <Route path="orders" element={<OrderSettings />} />
+                    </Route>
                 </Route>
             </Routes>
         </BrowserRouter>

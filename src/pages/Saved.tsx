@@ -9,13 +9,6 @@ const Saved = () => {
     <div className="w-full h-full md:w-11/12">
 
       <header className="relative w-full h-1/12 flex items-center px-5 bg-inknity-background border-b border-inknity-purple/30">
-        <Link
-          to={`/user/${username}/settings`}
-          className="text-inknity-yellow hover:text-inknity-purple transition"
-        >
-          ←
-        </Link>
-
         <h2 className="w-full text-center font-bold text-lg text-inknity-white">
           Salvos
         </h2>

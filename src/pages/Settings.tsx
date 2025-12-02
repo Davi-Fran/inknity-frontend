@@ -1,4 +1,4 @@
-import { NavLink, Link, useParams, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
 const Settings = () => {
@@ -10,26 +10,22 @@ const Settings = () => {
     {
       title: 'Itens Salvos',
       icon: '💾',
-      link: `/user/${username}/saved`,   
-      desc: 'Veja e gerencie o conteúdo que você salvou',
+      link: `/user/${username}/settings/saved`,
     },
     {
       title: 'Preferências de Conteúdo',
       icon: '🎭',
       link: `/user/${username}/settings/content`,
-      desc: 'Ajuste o tipo de conteúdo que aparece pra você',
     },
     {
       title: 'Atualizar Senha',
       icon: '🔐',
       link: `/user/${username}/settings/password`,
-      desc: 'Altere sua senha de forma segura',
     },
     {
       title: 'Pedidos e Pagamentos',
       icon: '💳',
       link: `/user/${username}/settings/orders`,
-      desc: 'Gerencie compras e transações',
     },
   ]
 
@@ -39,60 +35,61 @@ const Settings = () => {
   }
 
   return (
-    <div className='h-screen w-full md:w-11/12 md:flex md:flex-col md:items-center'>
+    <div className="w-full h-screen flex bg-inknity-background text-white md:w-11/12" >
 
-      <header className='w-full h-1/6 md:flex md:items-center md:h-1/10'>
-  
-        <section className='flex items-center justify-between w-full h-1/2 bg-inknity-background-2 px-5 md:hidden'>
-          <div className='min-h-full w-full md:w-11/12 md:flex md:flex-col md:items-center my-10'></div>
+      {/* SIDEBAR DESKTOP */}
+      <aside className="hidden md:flex flex-col w-72 border-r border-inknity-purple/20 p-6 gap-4">
+        <h2 className="text-lg font-semibold text-inknity-yellow mb-4">
+          Configurações
+        </h2>
 
-          <div className='flex items-center w-1/4 h-full gap-2 mr-2'>
-            <NavLink to={`/user/${username}/notifications`}>
-              <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='size-8'>
-                <path strokeLinecap='round' strokeLinejoin='round' d='M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0' />
-              </svg>
-            </NavLink>
-
-            <NavLink to={`/user/${username}/chat`}>
-              <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='size-8'>
-                <path strokeLinecap='round' strokeLinejoin='round' d='M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z' />
-              </svg>
-            </NavLink>
-          </div>
-        </section>
-
-        <section className='flex justify-center items-center w-full h-1/2'>
-          <h2 className='text-inknity-yellow text-lg font-semibold'>Configurações</h2>
-        </section>
-      </header>
-
-      <main className='w-full overflow-auto md:w-5/8 md:px-8 md:pt-5 md:bg-inknity-background md:rounded-md text-white pb-20 md:pb-1'>
-        <div className='flex flex-col gap-4 py-6'>
-          {settingsItems.map((item, i) => (
+        <nav className="flex flex-col gap-2">
+          {settingsItems.map((item, index) => (
             <Link
-              key={i}
+              key={index}
               to={item.link}
-              className='flex items-center justify-between p-4 rounded-md bg-inknity-background-2 hover:bg-inknity-purple/20 transition-all duration-300 cursor-pointer border border-transparent hover:border-inknity-purple/30'
+              className="flex items-center gap-3 p-3 rounded-md hover:bg-inknity-purple/20 transition cursor-pointer"
             >
-              <div className='flex items-center gap-4'>
-                <div className='text-2xl'>{item.icon}</div>
-                <div>
-                  <h3 className='font-semibold text-base'>{item.title}</h3>
-                  <p className='text-sm text-inknity-white/60'>{item.desc}</p>
-                </div>
-              </div>
-              <div className='text-inknity-yellow text-lg'>›</div>
+              <span className="text-xl">{item.icon}</span>
+              <span className="text-sm">{item.title}</span>
             </Link>
           ))}
-        </div>
+        </nav>
 
-        <div className='flex justify-center py-8'>
-          <button 
-            className='text-sm text-inknity-white/60 hover:text-inknity-yellow transition cursor-pointer'
-            onClick={handleLogout}
-          >
-            Sair da conta
-          </button>
+        <button
+          onClick={handleLogout}
+          className="mt-auto text-xs text-inknity-white/60 hover:text-inknity-yellow transition"
+        >
+          Sair da conta
+        </button>
+      </aside>
+
+      {/* MOBILE HEADER */}
+      <header className="md:hidden w-full h-16 bg-inknity-background-2 flex items-center justify-center border-b border-inknity-purple/20">
+        <h2 className="text-inknity-yellow font-semibold text-lg">Configurações</h2>
+      </header>
+
+      {/* ÁREA PRINCIPAL */}
+      <main className="flex-1 overflow-auto p-6 md:p-10">
+        <Outlet />
+
+        {/* Mobile lista */}
+        <div className="md:hidden flex flex-col gap-4">
+          {settingsItems.map((item, index) => (
+            <Link
+              key={index}
+              to={item.link}
+              className="flex items-center justify-between p-4 rounded-md bg-inknity-background-2 hover:bg-inknity-purple/20 transition-all duration-300 cursor-pointer border border-transparent hover:border-inknity-purple/30"
+            >
+              <div className="flex items-center gap-4">
+                <div className="text-2xl">{item.icon}</div>
+                <div>
+                  <h3 className="font-semibold text-base">{item.title}</h3>
+                </div>
+              </div>
+              <div className="text-inknity-yellow text-lg">›</div>
+            </Link>
+          ))}
         </div>
       </main>
     </div>
